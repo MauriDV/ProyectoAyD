@@ -1,0 +1,16 @@
+COMO <role> QUIERO <objetivo> PARA <verifica>
+	
+   
+COMO jugador QUIERO saber mis puntos y los del oponente
+
+COMO jugador QUIERO seleccionar maximo de puntos
+
+COMO jugador QUIERO cantar truco, quiero, no quiero, re-truco, quiero vale cuatro, envido, real envido, falta envido, ir al maso
+
+COMO jugador QUIERO salir del juego
+
+COMO jugador QUIERO saber los puntos(cartas) del oponente al finalizar la partida 
+
+COMO jugador QUIERO mostrar mis puntos(cartas) al oponente al finalizar la partida
+
+
