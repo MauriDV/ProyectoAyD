@@ -20,8 +20,8 @@
 var weight = {
   'oro':    [ 7, 8, 9, 1, 2, 3, 10, 0, 0, 0, 5, 6],
   'copa':   [ 7, 8, 9, 1, 2, 3,  4, 0, 0, 0, 5, 6],
-  'espada': [13, 8, 9, 1, 2, 3, 11, 0, 0, 0, 5, 6],
-  'basto':  [12, 8, 9, 1, 2, 3,  4, 0, 0, 0, 5, 6]
+  'espada': [ 13, 8, 9, 1, 2, 3, 11, 0, 0, 0, 5, 6],
+  'basto':  [ 12, 8, 9, 1, 2, 3,  4, 0, 0, 0, 5, 6]
 };
 
 /*
@@ -32,7 +32,7 @@ var weight = {
 function Card(number, suit){
   this.number = number;
   this.suit = suit;
-  this.weight = weight[suit][number];
+  this.weight = weight[suit][number-1];
 };
 
 /*
@@ -58,6 +58,10 @@ Card.prototype.confront = function(card){
     return 0;
   else if(this.weight < card.weight)
     return -1;
+};
+
+Card.prototype.compareSuit = function(card) {
+  return (this.suit==card.suit);
 };
 
 module.exports.card = Card;
