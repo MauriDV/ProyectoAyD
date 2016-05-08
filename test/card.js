@@ -25,6 +25,22 @@ describe('Card', function() {
     });
   });
 
+  describe("#Compare", function(){
+    var c1 = new Card(1, 'copa');
+    var c2 = new Card(11, 'copa');
+    var c3 = new Card(2, 'basto');
+    describe("when suit of cards are equals", function(){
+      it("should returns true", function(){
+        expect(c1.compareSuit(c2)).to.be.eq(true);
+      })
+    });
+    describe("when suit of cards are not equals", function(){
+      it("should returns false", function(){
+        expect(c1.compareSuit(c3)).to.be.eq(false);
+      })
+    });
+  });
+
   describe("#confront", function(){
     var c = new Card(1, 'espada');
     var x = new Card(4, 'basto');
