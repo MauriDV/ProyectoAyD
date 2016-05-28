@@ -5,16 +5,18 @@ var Player = playerModel.player;
 var Deck = deskModel.deck;
 var Card = cardModel.card;
 
-d = new Deck();
-cartas = d.mix();
-
 function Game(p1,p2){
 	this.player1=p1;
-	this.player2=p2;
-	
+	this.player2=p2;	
+	this.currentHand=p1.name;
+	this.currentRound=undefined;
+	this.score = [0, 0];
 };
 
 Game.prototype.dealCards = function(pl1,pl2) {
+	d = new Deck();
+	cartas = d.mix();
+
 	pl1.card1=cartas[0];
 	pl2.card1=cartas[1];
 	pl1.card2=cartas[2];
@@ -25,15 +27,17 @@ Game.prototype.dealCards = function(pl1,pl2) {
 	pl2.setPointsCards();
 };
 
-Game.prototype.getPoints = function(c1,c2){
-	if (c1.confront(c2)==1){
-		this.player1.setPoints(1);
-	}else if(c1.confront(c2)==0){
-		this.player1.setPoints(0);
-		this.player2.setPoints(0);
-	}else if(c1.confront(c2)==-1){
-		this.player2.setPoints(1);
-	}
+Game.prototype.newRound = function(){
+  var round = new Round(this, this.currentHand);
+  this.currentRound = round;
+  this.currentHand = (switchPlayer(this.currentHand)).name;
+  this.rounds.push(round);
+
+  return this;
+}
+
+function switchPlayer(player) {
+  return player1 === player ? player2:player1;
 };
 
 module.exports.game = Game;
@@ -50,6 +54,18 @@ module.exports.game = Game;
 
 // console.log("Cartas de "+play1.name+": "+play1.showCards());
 // console.log("Puntos para el envido: "+play1.getPointsCards());
+
+// console.log("Cartas de "+play2.name+": "+play2.showCards());
+// console.log("Puntos para el envido: "+play2.getPointsCards());
+
+// console.log("Eric dice: Envido");
+// play1.aceptar=true;
+// play2.aceptar=false;
+// console.log(typeof(play2.aceptar));
+// play1.envido(play2,2);
+
+// console.log(play1.pointsGame);
+// console.log(play2.pointsGame);
 
 // console.log("Cartas de "+play1.name+": "+play1.showCards());
 // console.log("Cartas de "+play2.name+": "+play2.showCards());
