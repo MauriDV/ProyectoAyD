@@ -13,20 +13,28 @@ var Deck  = deckModel.deck;
 
 function newTrucoFSM(){
   var fsm = StateMachine.create({
-  initial: 'init',
-  events: [
-    { name: 'play card', from: 'init',                           to: 'primer carta' },
-    { name: 'envido',    from: ['init', 'primer carta'],         to: 'envido' },
-    { name: 'truco',     from: ['init', 'played card'],          to: 'truco'  },
-    { name: 'play card', from: ['quiero', 'no-quiero',
-                                'primer carta', 'played card'],  to: 'played card' },
-    { name: 'quiero',    from: ['envido', 'truco'],              to: 'quiero'  },
-    { name: 'no-quiero', from: ['envido', 'truco'],              to: 'no-quiero' },
-  ]});
+    initial: 'init',
+    events: [
+      { name: 'playCard', from: 'init',                           to: 'primercarta' },
+      { name: 'envido',    from: ['init', 'primercarta'],         to: 'envido' },
+      { name: 'envidox2',   from: 'envido'              ,            to: 'envidox2'},
+      { name: 'truco',     from: ['init', 'playedcard'],          to: 'truco'  },
+      { name: 'playCard', from: ['quiero', 'noQuiero',
+                                  'primercarta', 'playedcard'],  to: 'playedcard' },
+      { name: 'quiero',    from: ['envidox2','envido', 'truco'],              to: 'quiero'  },
+      { name: 'noQuiero', from: ['envidox2','envido', 'truco'],              to: 'noQuiero' },
+    ],
+
+    callbacks: {
+      onchangestate: function(event, from, to) {if ((from=="envido")&&(to=="envidox2")) e=to}
+    }
+
+  });
 
   return fsm;
 }
 
+e = false;
 
 function Round(game, turn){
   /*
@@ -59,45 +67,64 @@ function Round(game, turn){
 /*
  * Generate a new deck mixed and gives to players the correspondent cards
  */
-Round.prototype.deal = function(){
-  var deck = new Deck().mix();
+Round.prototype.dealCards = function() {
+  d = new Deck();
+  cartas = d.mix();
 
-  this.game.player1.setCards(_.pullAt(deck, 0, 2, 4));
-  this.game.player2.setCards(_.pullAt(deck, 1, 3, 5));
+  this.game.player1.card1=cartas[0];
+  this.game.player2.card1=cartas[1];
+  this.game.player1.card2=cartas[2];
+  this.game.player2.card2=cartas[3];
+  this.game.player1.card3=cartas[4];
+  this.game.player2.card3=cartas[5];
+  this.game.player1.setPointsCards();
+  this.game.player2.setPointsCards();
 };
 
-/*
- * Calculates who is the next player to play.
- *
- * + if action is 'quiero' or 'no-quiero' and it's playing 'envido' the next
- * player to play is who start to chant
- *
- * + if action is 'quiero' or 'no-quiero' and it's playing 'envido' the next
- * player to play is who start to chant
- *
- * ToDo
- */
+
 Round.prototype.changeTurn = function(){
-   return this.currentTurn = switchPlayer(this.currentTurn);
+   return this.currentTurn = this.switchPlayer(this.currentTurn);
 }
 
 /*
  * returns the oposite player
  */
-function switchPlayer(player) {
-  return "player1" === player ? "player2" : "player1";
+Round.prototype.switchPlayer = function(player) {
+  return (this.game.player1) === player ? (this.game.player2) : (this.game.player1);
 };
 
 /*
- * ToDo: Calculate the real score
+ * Calculate the real score for envido and envido-envido
  */
-Round.prototype.calculateScore = function(action){
-  if(action == "quiero" || action == "no-quiero"){
-    this.score = [0, 2];
-
-    this.game.score[0] += this.score[0];
-    this.game.score[1] += this.score[1];
+Round.prototype.calculateScoreE = function(player,action){
+  a = this.switchPlayer(player);
+  if(action == "quiero"){
+    if(player.getPointsCards()>a.getPointsCards()){
+      if (e=="envidox2") {
+        this.score=[4,0];
+      }else{
+        this.score=[0,2]
+      }
+    }else{
+      if (e=="envidox2") {
+        this.score=[0,4];
+      }else{
+        this.score=[2,0]
+      }
+    }
+    this.fsm.quiero();
+  }else if(action == "noQuiero"){ 
+    if (e=="envidox2") {
+      this.score = [0,2]
+    } else{
+      this.score = [0,1];
+    };
+    this.fsm.noQuiero(); 
   }
+
+  this.game.score[0] += this.score[0];
+  this.game.score[1] += this.score[1];
+  e="";
 
   return this.score;
 }
@@ -105,12 +132,30 @@ Round.prototype.calculateScore = function(action){
 /*
  * Let's Play :)
  */
-Round.prototype.play = function(action, value) {
-  // move to the next state
-  this.fsm[action]();
+Round.prototype.play = function(player, action, value) {
 
-  // check if is needed sum score
-  this.calculateScore(action);
+  // move to the next state
+  this.fsm[action];
+
+  // if action is envido move to envido state  
+  if (action=="envido") {
+    this.fsm.envido();
+  };
+
+  // if action is envido-envido move to envidox2 state  
+  if (action=="envidox2") {
+    this.fsm.envidox2();
+  };
+
+  // if action is truco move to truco state  
+  if (action=="truco"){
+    this.fsm.truco();
+  }
+
+  // if action is quiero or no quiero move to quiero state or noQuiero state 
+  if (action=="quiero"||action=="noQuiero"){
+    this.calculateScoreE(player,action);
+  }
 
   // Change player's turn
   return this.changeTurn();
