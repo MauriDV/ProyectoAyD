@@ -60,8 +60,28 @@ Card.prototype.confront = function(card){
     return -1;
 };
 
+// Return true if suits of two cards are equals
+
 Card.prototype.compareSuit = function(card) {
   return (this.suit==card.suit);
+};
+
+//Return the points for envido of two cards
+
+Card.prototype.pointsEnvido = function(card) {
+  if(this.compareSuit(card)){
+    if (this.number>=11 && card.number>=11){
+      return 20;
+    }else if(this.number>=11 && card.number<11){
+      return (10+card.number)+10;
+    }else if(this.number<11 && card.number>=11){
+      return (10+this.number)+10;
+    }else if(this.number<11 && card.number<11){
+      return (this.number+card.number)+20;
+    }
+  }else{
+    return Math.max(this.number,card.number);
+  }
 };
 
 module.exports.card = Card;
