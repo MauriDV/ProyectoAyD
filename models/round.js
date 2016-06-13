@@ -26,7 +26,11 @@ function newTrucoFSM(){
     ],
 
     callbacks: {
-      onchangestate: function(event, from, to) {if ((from=="envido")&&(to=="envidox2")) e=to}
+      onchangestate: function(event, from, to) {
+        console.log(from+" ---> "+to);
+        if ((from=="envido")&&(to=="envidox2")){ e=to}
+        if ((from=="playCard")&&(to=="playedcard")){c=to}
+      }
     }
 
   });
@@ -34,7 +38,8 @@ function newTrucoFSM(){
   return fsm;
 }
 
-e = false;
+e = "";
+c="";
 
 function Round(game, turn){
   /*
@@ -80,7 +85,6 @@ Round.prototype.dealCards = function() {
   this.game.player1.setPointsCards();
   this.game.player2.setPointsCards();
 };
-
 
 Round.prototype.changeTurn = function(){
    return this.currentTurn = this.switchPlayer(this.currentTurn);
@@ -129,12 +133,28 @@ Round.prototype.calculateScoreE = function(player,action){
   return this.score;
 }
 
+Round.prototype.confrontCards = function(card1,card2){
+  console.log(card1.show()+" - "+card2.show());
+  i = card1.confront(card2);
+  if(i==1){
+    console.log("perdiste");
+  }else{
+    console.log("ganaste");
+    console.log(this.currentTurn);
+    this.changeTurn();
+    console.log(this.currentTurn);
+  }
+};
+
 /*
  * Let's Play :)
  */
+
+count = 0;
 Round.prototype.play = function(player, action, value) {
 
   // move to the next state
+
   this.fsm[action];
 
   // if action is envido move to envido state  
@@ -155,6 +175,17 @@ Round.prototype.play = function(player, action, value) {
   // if action is quiero or no quiero move to quiero state or noQuiero state 
   if (action=="quiero"||action=="noQuiero"){
     this.calculateScoreE(player,action);
+  }
+
+  if (action=="playCard"){
+    if (count==0){
+      valueAux = value;
+      this.fsm.playCard();
+      count++;
+    }else{
+      this.confrontCards(valueAux,value)
+      count=0;
+    };
   }
 
   // Change player's turn
