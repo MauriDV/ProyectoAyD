@@ -45,6 +45,19 @@ Game.prototype.switchPlayer = function(player) {
 module.exports.game = Game;
 
 
+p1 = new Player("Mauri");
+p2 = new Player("Peluca");
+
+g = new Game(p1,p2);
+
+g.newRound();
+console.log(g);
+g.play(p1,"playCard",p1.card1);
+g.play(p2,"playCard",p2.card1);
+g.play(p1,"playCard",p1.card2);
+g.play(p2,"playCard",p2.card2);
+
+
 
 
 
