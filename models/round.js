@@ -26,11 +26,7 @@ function newTrucoFSM(){
     ],
 
     callbacks: {
-      onchangestate: function(event, from, to) {
-        console.log(from+" ---> "+to);
-        if ((from=="envido")&&(to=="envidox2")){ e=to}
-        if ((from=="playCard")&&(to=="playedcard")){c=to}
-      }
+      onchangestate: function(event, from, to) {if ((from=="envido")&&(to=="envidox2"))e=to}
     }
 
   });
