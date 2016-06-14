@@ -129,17 +129,25 @@ Round.prototype.calculateScoreE = function(player,action){
   return this.score;
 }
 
-Round.prototype.confrontCards = function(card1,card2){
-  console.log(card1.show()+" - "+card2.show());
+Round.prototype.confrontCards = function(player,card1,card2){
   i = card1.confront(card2);
   if(i==1){
-    console.log("perdiste");
+    p = this.switchPlayer(player);
+    p.aux+=1;
   }else{
-    console.log("ganaste");
-    console.log(this.currentTurn);
+    player.aux+=1;
     this.changeTurn();
-    console.log(this.currentTurn);
   }
+};
+
+Round.prototype.calculateScoreP = function(p1,p2) {
+  if(p1.aux==2){
+    this.score = [0,1];
+  }else if(p2.aux==2){
+    this.score = [1,0];
+  }
+  this.game.score[0] += this.score[0];
+  this.game.score[1] += this.score[1];
 };
 
 /*
@@ -179,7 +187,9 @@ Round.prototype.play = function(player, action, value) {
       this.fsm.playCard();
       count++;
     }else{
-      this.confrontCards(valueAux,value)
+      this.confrontCards(player,valueAux,value);
+      this.calculateScoreP(player,this.switchPlayer(player));
+      this.fsm.playCard();
       count=0;
     };
   }
