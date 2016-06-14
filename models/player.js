@@ -12,6 +12,7 @@ function Player(name,card1,card2,card3){
 	this.card2=card2;
 	this.card3=card3;
 	this.pointsCards=0; //Points of cards
+	this.aux=0;
 };
 
 Player.prototype.showCards = function() {
