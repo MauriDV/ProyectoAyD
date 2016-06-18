@@ -26,7 +26,13 @@ function newTrucoFSM(){
     ],
 
     callbacks: {
-      onchangestate: function(event, from, to) {if ((from=="envido")&&(to=="envidox2"))e=to}
+      onchangestate: function(event, from, to) {
+        if ((from=="envido")&&(to=="envidox2")){
+          e=to
+        }else if (to=="truco"){
+          e=to;
+        }
+      }
     }
 
   });
@@ -62,6 +68,8 @@ function Round(game, turn){
    * Round' score
    */
   this.score = [0, 0];
+
+  this.esTruco = false;
 }
 
 
@@ -71,15 +79,9 @@ function Round(game, turn){
 Round.prototype.dealCards = function() {
   d = new Deck();
   cartas = d.mix();
+  this.game.player1.setPointsCards(cartas[0],cartas[2],cartas[4]);
+  this.game.player2.setPointsCards(cartas[1],cartas[3],cartas[5]);
 
-  this.game.player1.card1=cartas[0];
-  this.game.player2.card1=cartas[1];
-  this.game.player1.card2=cartas[2];
-  this.game.player2.card2=cartas[3];
-  this.game.player1.card3=cartas[4];
-  this.game.player2.card3=cartas[5];
-  this.game.player1.setPointsCards();
-  this.game.player2.setPointsCards();
 };
 
 Round.prototype.changeTurn = function(){
@@ -99,27 +101,36 @@ Round.prototype.switchPlayer = function(player) {
 Round.prototype.calculateScoreE = function(player,action){
   a = this.switchPlayer(player);
   if(action == "quiero"){
-    if(player.getPointsCards()>a.getPointsCards()){
-      if (e=="envidox2") {
-        this.score=[4,0];
+    if ( e== "truco"){
+      this.esTruco=true;
+    }else {
+      if(player.getPointsCards()>a.getPointsCards()){
+        if (e=="envidox2") {
+          this.score=[4,0];
+        }else{
+          this.score=[0,2]
+        }
       }else{
-        this.score=[0,2]
-      }
-    }else{
-      if (e=="envidox2") {
-        this.score=[0,4];
-      }else{
-        this.score=[2,0]
+        if (e=="envidox2") {
+          this.score=[0,4];
+        }else{
+          this.score=[2,0]
+        }
       }
     }
     this.fsm.quiero();
   }else if(action == "noQuiero"){ 
-    if (e=="envidox2") {
-      this.score = [0,2]
-    } else{
-      this.score = [0,1];
-    };
-    this.fsm.noQuiero(); 
+    if (e=="truco"){
+      this.score=[1,0];
+      this.fsm.noQuiero();
+    }else{
+      if (e=="envidox2") {
+        this.score = [0,2]
+      } else{
+        this.score = [0,1];
+      };
+      this.fsm.noQuiero();
+    }
   }
 
   this.game.score[0] += this.score[0];
@@ -138,16 +149,15 @@ Round.prototype.confrontCards = function(player,card1,card2){
     player.aux+=1;
     this.changeTurn();
   }
+  console.log(this.score);
 };
 
 Round.prototype.calculateScoreP = function(p1,p2) {
   if(p1.aux==2){
-    this.score = [0,1];
+    this.score=[1,0]
   }else if(p2.aux==2){
-    this.score = [1,0];
+    this.score=[0,1];
   }
-  this.game.score[0] += this.score[0];
-  this.game.score[1] += this.score[1];
 };
 
 /*
@@ -192,8 +202,7 @@ Round.prototype.play = function(player, action, value) {
       this.fsm.playCard();
       count=0;
     };
-  }
-
+  };
   // Change player's turn
   return this.changeTurn();
 };
