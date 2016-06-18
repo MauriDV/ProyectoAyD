@@ -153,8 +153,9 @@ Round.prototype.confrontCards = function(player,card1,card2){
 };
 
 Round.prototype.calculateScoreP = function(p1,p2) {
-  if(p1.aux==2){
+  if((p1.aux==2)){
     this.score=[1,0]
+    this.game.score[0]+=this.score[0]
   }else if(p2.aux==2){
     this.score=[0,1];
   }
@@ -199,6 +200,7 @@ Round.prototype.play = function(player, action, value) {
     }else{
       this.confrontCards(player,valueAux,value);
       this.calculateScoreP(player,this.switchPlayer(player));
+
       this.fsm.playCard();
       count=0;
     };
