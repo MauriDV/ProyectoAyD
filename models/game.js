@@ -1,24 +1,28 @@
 var _ = require('lodash');
-var deskModel = require('./deck');
 var playerModel = require('./player');
-var cardModel = require('./card');
 var roundModel = require("./round");
+var cardModel = require("./card")
+var mongoose = require('mongoose');
 
+var Schema = mongoose.Schema;
+var Card = cardModel.card;
 var Round  = roundModel.round;
 var Player = playerModel.player;
-var Deck = deskModel.deck;
-var Card = cardModel.card;
 
-function Game(p1,p2){
-	this.player1=p1;
-	this.player2=p2;	
-	this.rounds = [];
-	this.currentHand=this.player1;
-	this.currentRound=undefined;
-	this.score = [0, 0];
-};
+var GameSchema = new Schema({
+  name:         String,
+  player1:      Object,
+  player2:      Object,
+  currentHand:  { type: Object, default: this.player1 },
+  currentRound: Object,
+  rounds:       { type : Array , default : [] },
+  score:        { type : Array , default : [0, 0] },
+});
+
+var Game=mongoose.model("Game",GameSchema);
 
 Game.prototype.play = function(player, action, value){
+  console.log("EAEAEAA");
   if(this.currentRound.currentTurn !== player)
     throw new Error("[ERROR] INVALID TURN...");
 
@@ -45,20 +49,31 @@ Game.prototype.switchPlayer = function(player) {
 module.exports.game = Game;
 
 
-p1 = new Player("Mauri");
-p2 = new Player("Peluca");
+g = new Game();
 
-g = new Game(p1,p2);
+g.player1=new Player({name:"Mauri",aux:0});
+g.player2=new Player({name:"Lince De las praderan latinoamericanas",aux:0});
+g.currentHand=g.player1;
 
 g.newRound();
-g.play(p1,"playCard",p1.card1);
-g.play(p2,"playCard",p2.card1);
-g.play(p1,"playCard",p1.card2);
-g.play(p2,"playCard",p2.card2);
-g.play(p1,"playCard",p1.card3);
-g.play(p2,"playCard",p2.card3);
 
-console.log(g);
+console.log(g.player1.showCards());
+console.log(g.player2.showCards());
+
+g.play(g.player1,"playCard",g.player1.card1);
+g.play(g.player2,"playCard",g.player2.card1);
+g.play(g.player2,"playCard",g.player2.card2);
+g.play(g.player1,"playCard",g.player1.card2);
+g.play(g.player2,"playCard",g.player2.card3);
+g.play(g.player1,"playCard",g.player1.card3);
+
+
+console.log(g.score);
+
+
+
+
+
 
 
 
