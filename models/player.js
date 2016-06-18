@@ -1,20 +1,22 @@
-var cardModel = require('./card');
-var deskModel = require('./deck');
-var roundModel = require('./round');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var Round = roundModel.round;
-var Deck = deskModel.deck;
-var Card = cardModel.card;
+var PlayerSchema = new Schema({
+  user: {
+    type: Schema.ObjectId,
+    ref: 'Player'
+  },
+  name: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  aux: Number
+});
 
-function Player(name,card1,card2,card3){
-	this.name=name;
-	this.card1=card1;
-	this.card2=card2;
-	this.card3=card3;
-	this.pointsCards=0; //Points of cards
-	this.aux=0;
-};
+var Player = mongoose.model('Player', PlayerSchema);
 
+//Show cards of this player
 Player.prototype.showCards = function() {
 	return (this.card1.show() +" "+this.card2.show() +" "+ this.card3.show());
 };
@@ -30,7 +32,10 @@ Player.prototype.getPointsCards = function() {
 };
 
 //calculate the points for three cards 
-Player.prototype.setPointsCards = function() {
+Player.prototype.setPointsCards = function(c1,c2,c3) {
+	this.card1=c1;
+	this.card2=c2;
+	this.card3=c3;
 	this.pointsCards = Math.max(this.card1.pointsEnvido(this.card2),this.card1.pointsEnvido(this.card3),this.card2.pointsEnvido(this.card3));
 };
 
