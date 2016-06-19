@@ -106,13 +106,13 @@ Round.prototype.calculateScoreE = function(player,action){
     }else {
       if(player.getPointsCards()>a.getPointsCards()){
         if (e=="envidox2") {
-          this.score=[4,0];
+          this.score=[0,4];
         }else{
-          this.score=[0,2]
+          this.score=[0,2];
         }
       }else{
         if (e=="envidox2") {
-          this.score=[0,4];
+          this.score=[4,0];
         }else{
           this.score=[2,0]
         }
@@ -130,6 +130,25 @@ Round.prototype.calculateScoreE = function(player,action){
         this.score = [0,1];
       };
       this.fsm.noQuiero();
+    }
+  }
+  if (player.getName()==this.game.player1.getName()) {
+    if(action=='quiero'){
+      var aux1 = this.score[1];
+      var aux0 = this.score[0]
+      this.score[0]=aux1;
+      this.score[1]=aux0;
+    }else{
+      this.score=this.score;
+    }
+  }else{
+    if(action=='noQuiero'){
+      var aux1 = this.score[1];
+      var aux0 = this.score[0]
+      this.score[0]=aux1;
+      this.score[1]=aux0;
+    }else{
+      this.score=this.score;
     }
   }
 
