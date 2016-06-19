@@ -57,16 +57,13 @@ g.currentHand=g.player1;
 
 g.newRound();
 
-console.log(g.player1.showCards());
-console.log(g.player2.showCards());
+console.log(g.player1.showCards()+" - "+g.player1.pointsCards);
+console.log(g.player2.showCards()+" - "+g.player2.pointsCards);
 
-g.play(g.player1,"playCard",g.player1.card1);
-g.play(g.player2,"playCard",g.player2.card1);
-g.play(g.player2,"playCard",g.player2.card2);
-g.play(g.player1,"playCard",g.player1.card2);
-g.play(g.player2,"playCard",g.player2.card3);
-g.play(g.player1,"playCard",g.player1.card3);
-
+g.play(g.player1,"envido");
+g.play(g.player2,"envidox2");
+g.play(g.player1,"noQuiero");
+// g.play(g.player2,"noQuiero");
 
 console.log(g.score);
 
