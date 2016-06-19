@@ -173,11 +173,21 @@ Round.prototype.confrontCards = function(player,card1,card2){
 
 Round.prototype.calculateScoreP = function(p1,p2) {
   if((p1.aux==2)){
-    this.score=[1,0]
-    this.game.score[0]+=this.score[0]
-  }else if(p2.aux==2){
+    this.score=[1,0];
+    
+    if(this.game.player1.name==p1.name){
+    		this.game.score[0]+=this.score[0]
+    }else
+    		this.game.score[1]+=this.score[0]
+	  }
+  else if(p2.aux==2){
     this.score=[0,1];
-  }
+    if(this.game.player1.name==p2.name){
+    	this.game.score[0]+=this.score[1]  	
+    }else
+    	this.game.score[1]+=this.score[1]
+    }		
+   
 };
 
 /*
