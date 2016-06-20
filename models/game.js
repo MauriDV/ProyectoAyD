@@ -48,55 +48,5 @@ Game.prototype.switchPlayer = function(player) {
 module.exports.game = Game;
 
 
-g = new Game();
-
-g.player1=new Player({name:"Mauri",aux:0});
-g.player2=new Player({name:"Lince De las praderan latinoamericanas",aux:0});
-g.currentHand=g.player1;
-
-g.newRound();
-
-console.log("++++++++++++++++++++++ RONDA 1 +++++++++++++++++++++++++++");
-
-console.log(g.player1.showCards()+" <---- Player1 - "+g.player1.pointsCards+" - "+g.player1.aux);
-console.log(g.player2.showCards()+" <---- Player2 - "+g.player2.pointsCards+" - "+g.player2.aux);
-
-g.play(g.player1,"envido");
-g.play(g.player2,"quiero");
-g.play(g.player1,"playCard",g.player1.card1);
-g.play(g.player2,"playCard",g.player2.card1);
-g.play(g.player1,"truco");
-g.play(g.player2,"quiero");
-g.play(g.player1,"playCard",g.player1.card2)
-g.play(g.player2,"playCard",g.player2.card2)
-g.play(g.player2,"playCard",g.player2.card3)
-g.play(g.player1,"playCard",g.player1.card3)
-
-console.log(g.currentRound.esTruco+" - "+g.score);
-
-g.newRound();
-
-console.log("++++++++++++++++++++++ RONDA 2 +++++++++++++++++++++++++++");
-
-console.log(g.player2.showCards()+" <---- Player2 - "+g.player2.pointsCards+" - "+g.player2.aux);
-console.log(g.player1.showCards()+" <---- Player1 - "+g.player1.pointsCards+" - "+g.player1.aux);
-
-g.play(g.player2,"playCard",g.player2.card1)
-g.play(g.player1,"playCard",g.player1.card1)
-g.play(g.player1,"playCard",g.player1.card2)
-g.play(g.player2,"playCard",g.player2.card2)
-g.play(g.player1,"playCard",g.player1.card3)
-g.play(g.player2,"playCard",g.player2.card3)
-
-console.log(g.score);
-
-
-
-
-
-
-
-
-
 
 
