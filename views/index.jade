@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  if (!user)
+    a(href="/login") Login
+    a(href="/register") Register
+  if (user)
+    p You are currently logged in as #{user.username}
+    p game: #{games}
+    a(href="/logout") Logout
+    a(href="/play")     play :)
