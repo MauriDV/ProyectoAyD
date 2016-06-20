@@ -11,7 +11,7 @@ var PlayerSchema = new Schema({
     required: true,
     unique: true
   },
-  aux: Number
+  aux: {type:Number,default:0}
 });
 
 var Player = mongoose.model('Player', PlayerSchema);
