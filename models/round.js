@@ -18,7 +18,7 @@ function newTrucoFSM(){
       { name: 'playCard', from: 'init',                           to: 'primercarta' },
       { name: 'envido',    from: ['init', 'primercarta'],         to: 'envido' },
       { name: 'envidox2',   from: 'envido'              ,            to: 'envidox2'},
-      { name: 'truco',     from: ['init', 'playedcard'],          to: 'truco'  },
+      { name: 'truco',     from: ['init', 'playedcard','primercarta'],          to: 'truco'  },
       { name: 'playCard', from: ['quiero', 'noQuiero',
                                   'primercarta', 'playedcard'],  to: 'playedcard' },
       { name: 'quiero',    from: ['envidox2','envido', 'truco'],              to: 'quiero'  },
@@ -41,7 +41,6 @@ function newTrucoFSM(){
 }
 
 e = "";
-c="";
 
 function Round(game, turn){
   /*
@@ -121,7 +120,8 @@ Round.prototype.calculateScoreE = function(player,action){
     this.fsm.quiero();
   }else if(action == "noQuiero"){ 
     if (e=="truco"){
-      this.score=[1,0];
+      this.score=[0,1];
+      this.status="stop"
       this.fsm.noQuiero();
     }else{
       if (e=="envidox2") {
@@ -151,43 +151,43 @@ Round.prototype.calculateScoreE = function(player,action){
       this.score=this.score;
     }
   }
-
   this.game.score[0] += this.score[0];
   this.game.score[1] += this.score[1];
   e="";
-
-  return this.score;
+  this.score=[0,0];
 }
 
 Round.prototype.confrontCards = function(player,card1,card2){
   i = card1.confront(card2);
-  if(i==1){
+  if(i==1 || i==0){
     p = this.switchPlayer(player);
     p.aux+=1;
   }else{
     player.aux+=1;
     this.changeTurn();
   }
-  console.log(this.score);
 };
 
 Round.prototype.calculateScoreP = function(p1,p2) {
-  if((p1.aux==2)){
-    this.score=[1,0];
-    
+  if(p1.aux==2){
+    this.game.player1.aux=0;
+    this.game.player2.aux=0;
+    this.status="stop";
     if(this.game.player1.name==p1.name){
-    		this.game.score[0]+=this.score[0]
-    }else
-    		this.game.score[1]+=this.score[0]
-	  }
-  else if(p2.aux==2){
-    this.score=[0,1];
+      if(this.esTruco==true){this.game.score[0]+=2;console.log("truco1")}else{this.game.score[0]+=1}
+    }else{
+      if(this.esTruco==true){this.game.score[1]+=2;console.log("truco2")}else{this.game.score[1]+=1}
+    }
+  }else if(p2.aux==2){
+    this.game.player1.aux=0;
+    this.game.player2.aux=0;
+    this.status="stop";
     if(this.game.player1.name==p2.name){
-    	this.game.score[0]+=this.score[1]  	
-    }else
-    	this.game.score[1]+=this.score[1]
-    }		
-   
+      if(this.esTruco==true){this.game.score[0]+=2;console.log("truco3")}else{this.game.score[0]+=1}
+    }else{
+      if(this.esTruco==true){this.game.score[1]+=2;console.log("truco4")}else{this.game.score[1]+=1}
+    }
+  }  
 };
 
 /*
@@ -221,7 +221,7 @@ Round.prototype.play = function(player, action, value) {
     this.calculateScoreE(player,action);
   }
 
-  if (action=="playCard"){
+  if ((action=="playCard")&&(this.status=="running")){
     if (count==0){
       valueAux = value;
       this.fsm.playCard();
@@ -229,7 +229,6 @@ Round.prototype.play = function(player, action, value) {
     }else{
       this.confrontCards(player,valueAux,value);
       this.calculateScoreP(player,this.switchPlayer(player));
-
       this.fsm.playCard();
       count=0;
     };
