@@ -87,6 +87,10 @@ Round.prototype.changeTurn = function(){
    return this.currentTurn = this.switchPlayer(this.currentTurn);
 }
 
+Round.prototype.posiblesStates = function() {
+  return this.fsm.transitions();
+};
+
 /*
  * returns the oposite player
  */
