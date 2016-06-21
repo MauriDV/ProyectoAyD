@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .container
+    h1 Creando nueva partida
+    br
+    form(role='form', action="/createNewGame/#{user}",method="post", style='max-width: 300px;')
+      .form-group
+          p Nombre de la partida
+          input.form-control(type='text', name="nGame", placeholder='Nombre de la partida')
+          br
+          p Nombre del oponente
+          input.form-control(type='text', name="p2", placeholder='Nombre de usuario')
+      button.btn.btn-default(type='submit') Crear
+      &nbsp;
+      a(href='/')
+        button.btn.btn-primary(type="button") Cancelar
