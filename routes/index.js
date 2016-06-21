@@ -4,6 +4,9 @@ var User = require('../models/user');
 var mongoose = require('mongoose');
 var Player = require('../models/player').player
 var Game = require('../models/game').game
+var Deck = require('../models/deck').deck
+var Card = require('../models/card').card
+var Round = require('../models/card').round
 var router = express.Router();
 
 var Game = require("../models/game").game;
@@ -44,15 +47,19 @@ router.get('/logout', function(req, res) {
 
 router.get('/createNewGame/:user', function(req,res) {
     var name = req.params.user;
-    console.log(name);
     res.render('newGame',{user:name}); 
 });
 
 router.post('/createNewGame/:user', function(req,res) {
     var jugador1 = new Player({name:req.params.user});
     var jugador2 = new Player({name:req.body.p2});
+    jugador1.save();
+    jugador2.save();
     var game = new Game({name:req.body.nGame,player1:jugador1,player2:jugador2,currentHand:jugador1})
-    res.redirect('/play/'+game);
+    game.save(function(err,g) {
+        console.log(g._id);
+        res.redirect('/play/'+g._id);
+    })
 })
 
 router.get('/ping', function(req, res){
@@ -60,10 +67,18 @@ router.get('/ping', function(req, res){
 });
 
 router.get('/play/:game',function(req,res){
-    var g = new Game(req.params.game);
-    console.log(g);
-    console.log(g.player1.getName())
-    res.render("play",{juego:g});
+    var query = Game.findOne({_id:req.params.game});
+    query.exec(function(err, game) {
+        if (err) return handleError(err);
+
+        var p1 = new Player(game.player1);
+        var p2 = new Player(game.player2);
+        g = new Game({name:game.name,player1:p1,player2:p2,currentHand:p1});
+        g.newRound();
+        res.render("play",{juego:g});
+    });
 });
 
+
 module.exports = router;
+
