@@ -1,8 +1,14 @@
 extends layout
-
 block content
   if (!juego)
     a(href="/login") Login
   if (juego)
     br
-    p #{juego.player1}
+    h1 #{juego.player1.showCards()} vs #{juego.player2.showCards()}
+    #{ a = juego.currentRound.posiblesStates()}
+    ul
+      each item in a
+        a(id=item,href='#{jego}/#{item}')=item
+        br
+    h4 puntos del jugador1: #{juego.score[0]}
+    h4 puntos del jugador 2 #{juego.score[1]}
