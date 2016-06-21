@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  if (!user)
+  if (!juego)
     a(href="/login") Login
-  if (user)
-    p Play as #{user.username}
-    a(href="/") <- atras
+  if (juego)
+    br
+    p #{juego.player1}
