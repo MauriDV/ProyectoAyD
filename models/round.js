@@ -8,6 +8,7 @@
 
 var _ = require('lodash');
 var StateMachine = require("../node_modules/javascript-state-machine/state-machine.js");
+var mongoose = require("mongoose");
 var deckModel = require("./deck");
 var Deck  = deckModel.deck;
 
@@ -43,35 +44,13 @@ function newTrucoFSM(){
 e = "";
 
 function Round(game, turn){
-  /*
-   * Game
-   */
-  this.game = game;
-
-  /*
-   * next turn
-   */
-  this.currentTurn = turn;
-
-  /*
-   * here is a FSM to perform user's actions
-   */
+  this.game = game
+  this.currentTurn = this.switchPlayer(turn);
   this.fsm = newTrucoFSM();
-
-  /*
-   *
-   */
   this.status = 'running';
-
-  /*
-   * Round' score
-   */
   this.score = [0, 0];
-
   this.esTruco = false;
 }
-
-
 /*
  * Generate a new deck mixed and gives to players the correspondent cards
  */
@@ -84,7 +63,7 @@ Round.prototype.dealCards = function() {
 };
 
 Round.prototype.changeTurn = function(){
-   return this.currentTurn = this.switchPlayer(this.currentTurn);
+  return this.currentTurn = this.switchPlayer(this.currentTurn);
 }
 
 Round.prototype.posiblesStates = function() {
