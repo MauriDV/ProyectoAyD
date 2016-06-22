@@ -69,14 +69,25 @@ router.post('/createNewGame', function(req,res) {
                 if (err){
                     console.log("ERROR: "+err);
                 }
-                res.redirect('/play?gId='+g._id);
+                res.redirect('/newRound?gId='+g._id);
             });
         });
     });
 })
 
-router.get('/ping', function(req, res){
-    res.status(200).send("pong!");
+router.get('/newRound', function(req, res){
+    var juego = Game.findOne({_id:req.query.gId},function(err,game){
+        if (err){
+            console.log("ERROR: "+err);
+        }
+        game.newRound();
+        console.log("Jugador 1: "+game.player1.getName());
+        console.log("Jugador 2: "+game.player2.getName());
+        console.log("CurrentHand: "+game.currentHand.getName());
+        console.log("CurrentRound: "+game.currentRound);
+        console.log("ID del game: "+game._id);
+        res.redirect("/play?gId="+game._id);
+    })
 });
 
 router.get('/play',function(req,res){
@@ -84,7 +95,11 @@ router.get('/play',function(req,res){
         if (err){
             console.log("ERROR: "+err);
         }
-        game.newRound();
+        console.log("Jugador 1: "+game.player1.getName());
+        console.log("Jugador 2: "+game.player2.getName());
+        console.log("CurrentHand: "+game.currentHand.getName()); 
+        console.log("CurrentRound: "+game.currentRound);   // CURRENTROUND ES UNDEFINED
+        console.log("ID del game: "+game._id);
         res.render("play",{juego:game});
     })
 });
