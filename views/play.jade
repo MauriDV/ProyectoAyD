@@ -1,14 +1,24 @@
 extends layout
+
 block content
-  if (!juego)
-    a(href="/login") Login
-  if (juego)
-    br
-    h1 #{juego.player1.showCards()} vs #{juego.player2.showCards()}
-    #{ a = juego.currentRound.posiblesStates()}
-    ul
+  .container
+    h1 Turno de: #{juego.currentRound.currentTurn.getName()}
+    p #{juego.currentRound.currentTurn.card1.show()}
+    p #{juego.currentRound.currentTurn.card2.show()}
+    p #{juego.currentRound.currentTurn.card3.show()}
+    p Puntos del envido: #{juego.currentRound.currentTurn.pointsCards}
+    hr
+    h2 Posibles jugadas
+    form(role='form', action="/play",method="post")
+      #{a = juego.currentRound.posiblesStates()}
       each item in a
-        a(id=item,href='#{jego}/#{item}')=item
-        br
-    h4 puntos del jugador1: #{juego.score[0]}
-    h4 puntos del jugador 2 #{juego.score[1]}
+        if item == "playCard"
+          if juego.currentRound.currentTurn.card1 !== null
+            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card1.show()}")
+          if juego.currentRound.currentTurn.card2 !== null
+            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card2.show()}")
+          if juego.currentRound.currentTurn.card3 !== null
+            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card3.show()}")
+        else
+          input(type="submit", name="accion", value="#{item}")
+      &nbsp;
