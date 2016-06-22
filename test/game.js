@@ -30,29 +30,29 @@ describe('Game', function() {
     );
   });
 
-	it('should save a game', function(done){
-    var game = new Game({ currentHand: 'player1' });
-    player1 = new Player({ name: 'mauricio' });
-    player2 = new Player({ name: 'patricio' });
+	// it('should save a game', function(done){
+ //    var game = new Game({ currentHand: 'player1' });
+ //    player1 = new Player({ name: 'mauricio' });
+ //    player2 = new Player({ name: 'patricio' });
 
-    player1.save(function(err, player1) {
-      if(err)
-        done(err)
-      game.player1 = player1;
-      player2.save(function(err, player2) {
-        if(err)
-          done(err)
-       game.player2 = player2;
-        game.save(function(err, model){
-          if(err)
-            done(err)
-          expect(model.player1.nickname).to.be.eq('J');
-          expect(model.player2.nickname).to.be.eq('X');
-          done();
-        });
-      })
-    });
-  });	
+ //    player1.save(function(err, player1) {
+ //      if(err)
+ //        done(err)
+ //      game.player1 = player1;
+ //      player2.save(function(err, player2) {
+ //        if(err)
+ //          done(err)
+ //       game.player2 = player2;
+ //        game.save(function(err, model){
+ //          if(err)
+ //            done(err)
+ //          expect(model.player1.nickname).to.be.eq('J');
+ //          expect(model.player2.nickname).to.be.eq('X');
+ //          done();
+ //        });
+ //      })
+ //    });
+ //  });	
 
   it('plays [envido, quiero] should gives 2 points to winner', function(){
     game.play(game.player1, 'envido');

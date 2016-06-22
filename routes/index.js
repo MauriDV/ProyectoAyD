@@ -90,9 +90,12 @@ router.get('/play',function(req,res){
 });
 
 router.post('/play',function(req,res){
-    res.redirect("/play/"+g._id)
+    var juego=Game.findOne({_id:req.body.idPartida},function(err,game) {
+        var estado=req.body.action;
+        console.log(estado);
+        res.redirect("/play?gId="+game._id)
+    });
 });
-
 
 module.exports = router;
 

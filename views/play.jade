@@ -3,22 +3,23 @@ extends layout
 block content
   .container
     h1 Turno de: #{juego.currentRound.currentTurn.getName()}
-    p #{juego.currentRound.currentTurn.card1.show()}
-    p #{juego.currentRound.currentTurn.card2.show()}
-    p #{juego.currentRound.currentTurn.card3.show()}
+    p #1   #{juego.currentRound.currentTurn.card1.show()}
+    p #2   #{juego.currentRound.currentTurn.card2.show()}
+    p #3   #{juego.currentRound.currentTurn.card3.show()}
     p Puntos del envido: #{juego.currentRound.currentTurn.pointsCards}
     hr
     h2 Posibles jugadas
     form(role='form', action="/play",method="post")
+      input(type="hidden", name="idPartida", value="#{juego._id}")
       #{a = juego.currentRound.posiblesStates()}
       each item in a
         if item == "playCard"
           if juego.currentRound.currentTurn.card1 !== null
-            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card1.show()}")
+            input(type="submit", name="action", value="Jugar Carta #1")
           if juego.currentRound.currentTurn.card2 !== null
-            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card2.show()}")
+            input(type="submit", name="action", value="Jugar Carta #2")
           if juego.currentRound.currentTurn.card3 !== null
-            input(type="submit", name="accion", value="#{juego.currentRound.currentTurn.card3.show()}")
+            input(type="submit", name="action", value="Jugar Carta #3")
         else
-          input(type="submit", name="accion", value="#{item}")
+          input(type="submit", name="action", value="#{item}")
       &nbsp;

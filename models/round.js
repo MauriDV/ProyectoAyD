@@ -50,6 +50,7 @@ function Round(game, turn){
   this.status = 'running';
   this.score = [0, 0];
   this.esTruco = false;
+
 }
 /*
  * Generate a new deck mixed and gives to players the correspondent cards
