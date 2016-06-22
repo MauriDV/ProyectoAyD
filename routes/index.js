@@ -3,7 +3,6 @@ var passport = require('passport');
 var User = require('../models/user');
 var mongoose = require('mongoose');
 var Player = require('../models/player').player
-var Game = require('../models/game').game
 var Deck = require('../models/deck').deck
 var Card = require('../models/card').card
 var Round = require('../models/card').round
@@ -45,38 +44,53 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
-router.get('/createNewGame/:user', function(req,res) {
-    var name = req.params.user;
-    res.render('newGame',{user:name}); 
+router.get('/createNewGame', function(req,res) {
+    res.render('newGame'); 
 });
 
-router.post('/createNewGame/:user', function(req,res) {
-    var jugador1 = new Player({name:req.params.user});
-    var jugador2 = new Player({name:req.body.p2});
-    jugador1.save();
-    jugador2.save();
-    var game = new Game({name:req.body.nGame,player1:jugador1,player2:jugador2,currentHand:jugador1})
-    game.save(function(err,g) {
-        console.log(g._id);
-        res.redirect('/play/'+g._id);
-    })
+router.post('/createNewGame', function(req,res) {
+    var jugador1 = new Player({name:req.body.you});
+    var jugador2 = new Player({name:req.body.oponente});
+    jugador1.save(function(err,p1){
+        if (err){
+            console.log("ERROR j1: "+err);
+        }
+        jugador2.save(function(err,p2) {
+            if (err){
+                console.log("ERROR j2: "+err);
+            }
+            var game = new Game({
+                name : req.body.nGame,
+                player1 : p1,
+                player2 : p2,
+                currentHand : p1
+            });
+            game.save(function (err,g) {
+                if (err){
+                    console.log("ERROR: "+err);
+                }
+                res.redirect('/play?gId='+g._id);
+            });
+        });
+    });
 })
 
 router.get('/ping', function(req, res){
     res.status(200).send("pong!");
 });
 
-router.get('/play/:game',function(req,res){
-    var query = Game.findOne({_id:req.params.game});
-    query.exec(function(err, game) {
-        if (err) return handleError(err);
+router.get('/play',function(req,res){
+    var juego = Game.findOne({_id:req.query.gId},function(err,game){
+        if (err){
+            console.log("ERROR: "+err);
+        }
+        game.newRound();
+        res.render("play",{juego:game});
+    })
+});
 
-        var p1 = new Player(game.player1);
-        var p2 = new Player(game.player2);
-        g = new Game({name:game.name,player1:p1,player2:p2,currentHand:p1});
-        g.newRound();
-        res.render("play",{juego:g});
-    });
+router.post('/play',function(req,res){
+    res.redirect("/play/"+g._id)
 });
 
 
