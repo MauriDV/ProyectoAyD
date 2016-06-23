@@ -1,25 +1,58 @@
 extends layout
 
 block content
+
+  h1
+      p Puntos de #{juego.player1.getName()}: #{juego.score[0]}
+      p Puntos de #{juego.player2.getName()}: #{juego.score[1]}
+
   .container
-    h1 Turno de: #{juego.currentRound.currentTurn.getName()}
-    p #1   #{juego.currentRound.currentTurn.card1.show()}
-    p #2   #{juego.currentRound.currentTurn.card2.show()}
-    p #3   #{juego.currentRound.currentTurn.card3.show()}
-    p Puntos del envido: #{juego.currentRound.currentTurn.pointsCards}
-    hr
-    h2 Posibles jugadas
-    form(role='form', action="/play",method="post")
-      input(type="hidden", name="idPartida", value="#{juego._id}")
-      #{a = juego.currentRound.posiblesStates()}
-      each item in a
-        if item == "playCard"
+    if juego.score[0] >= 15 || juego.score[1] >= 15
+      h1 SE TERMINO LA PARTIDA
+      a(href="/") Home
+    else
+      if juego.currentRound.status == "stop"
+        h1 SE TERMINO LA MANO
+        a(href="/newRound") Proxima Ronda
+      else
+        .mesa
+          h1
+            each i in juego.currentRound.cartasJugadas()
+              h3 #{i.show()}
+        if juego.player1 == juego.currentRound.currentTurn
+          h1 Turno de: #{juego.player1.getName()}
           if juego.currentRound.currentTurn.card1 !== null
-            input(type="submit", name="action", value="Jugar Carta #1")
+            p #1   #{juego.player1.card1.show()}
           if juego.currentRound.currentTurn.card2 !== null
-            input(type="submit", name="action", value="Jugar Carta #2")
+            p #2   #{juego.player1.card2.show()}
           if juego.currentRound.currentTurn.card3 !== null
-            input(type="submit", name="action", value="Jugar Carta #3")
-        else
-          input(type="submit", name="action", value="#{item}")
-      &nbsp;
+            p #3   #{juego.player1.card3.show()}
+          p Puntos del envido: #{juego.player1.pointsCards}
+        if juego.player2 == juego.currentRound.currentTurn
+          h1 Turno de: #{juego.player2.getName()}
+          if juego.currentRound.currentTurn.card1 !== null
+            p #1   #{juego.player2.card1.show()}
+          if juego.currentRound.currentTurn.card2 !== null
+            p #2   #{juego.player2.card2.show()}
+          if juego.currentRound.currentTurn.card3 !== null  
+            p #3   #{juego.player2.card3.show()}
+          p Puntos del envido: #{juego.player2.pointsCards}
+          h2 Posibles jugadas
+        form(role='form', action="/play",method="post")
+          input(type="hidden", name="idPartida", value="#{juego._id}")
+          #{a = juego.currentRound.posiblesStates()}
+          each item in a
+            if item == "playCard"
+              if juego.currentRound.currentTurn.card1 !== null
+                input(type="submit", name="action", value="Jugar Carta #1")
+              if juego.currentRound.currentTurn.card2 !== null
+                input(type="submit", name="action", value="Jugar Carta #2")
+              if juego.currentRound.currentTurn.card3 !== null
+                input(type="submit", name="action", value="Jugar Carta #3")
+            else
+              if item == "truco"
+                if juego.currentRound.esTruco !== true
+                  input(type="submit", name="action", value="#{item}")
+              else
+                input(type="submit", name="action", value="#{item}")
+          &nbsp;
