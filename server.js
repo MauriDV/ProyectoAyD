@@ -43,7 +43,7 @@ passport.deserializeUser(User.deserializeUser())
 
 // mongoose
 mongoose.connect('mongodb://localhost/trucoDB',function(){
-  console.log("asfdasdfas");
+  console.log("Data Base OK");
 });
 
 
