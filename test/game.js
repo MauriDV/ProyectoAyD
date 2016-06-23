@@ -110,8 +110,8 @@ describe('Game', function() {
 		game.play(game.player2,'truco');
 		game.play(game.player1,'quiero');
 		game.play(game.player2,'playCard',game.player2.card3);
-		expect(game.score[0]).to.be.equals(2);
-		expect(game.score[1]).to.be.equals(0);
+		expect(game.score[0]).to.be.equals(0);
+		expect(game.score[1]).to.be.equals(2);
     
   });
 
