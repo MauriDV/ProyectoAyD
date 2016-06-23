@@ -52,9 +52,7 @@ router.post('/createNewGame', function(req,res) {
     var jugador1 = new Player({name:req.body.you});
     var jugador2 = new Player({name:req.body.oponente});
     g = new Game(jugador1,jugador2);
-    console.log(g.currentHand+"------> HAND");
     g.newRound();
-    console.log(g.currentRound.currentTurn+"------> TURN");
     g.currentRound.dealCards();
     res.redirect("/play");
     // jugador1.save(function(err,p1){
