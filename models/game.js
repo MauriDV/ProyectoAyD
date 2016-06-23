@@ -20,9 +20,17 @@ var GameSchema = new Schema({
   score:        { type : Array , default : [0, 0] },
 });
 
-GameSchema.methods.newRound = function(){
+function Game(player1, player2){
+  this.player1 = player1;
+  this.player2 = player2;
+  this.rounds = [];
+  this.currentHand = this.player2;
+  this.currentRound = undefined;
+  this.score = [0,0];
+}
+
+Game.prototype.newRound = function(){
   var round = new Round(this, this.currentHand);
-  round.dealCards();
   this.currentRound = round;
   this.currentHand = this.switchPlayer(this.currentHand);
   this.rounds.push(round);
@@ -30,7 +38,6 @@ GameSchema.methods.newRound = function(){
   return this;
 }
 
-var Game=mongoose.model("Game",GameSchema);
 
 Game.prototype.play = function(player, action, value){
   if(this.currentRound.currentTurn !== player)
