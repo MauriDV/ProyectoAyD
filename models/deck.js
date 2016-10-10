@@ -1,3 +1,5 @@
+// MODELO DEL MAZO
+
 var _ = require('lodash');
 var cardModel = require('./card');
 
