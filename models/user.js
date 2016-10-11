@@ -1,7 +1,7 @@
 /*
- * Represents a player in the game
- * @param name [String]: old state to intialize the new state
+ * User representation.
  */
+
 var config = require('../config');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
