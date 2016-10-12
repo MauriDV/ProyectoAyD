@@ -1,6 +1,10 @@
+/*
+ * Player representation.
+ */
+
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-
 var PlayerSchema = new Schema({
   name: String,
   aux: {type:Number,default:0}
