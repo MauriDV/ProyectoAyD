@@ -1,4 +1,8 @@
 /*
+ * Card representation.
+ */
+
+/*
 * Matrix used to calculate the card weight in the Truco game
 *   weigth - card
 *      13  -  1 espada
