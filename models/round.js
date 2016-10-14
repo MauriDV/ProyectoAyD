@@ -1,4 +1,8 @@
 /*
+ * Round representation.
+ */
+
+/*
  *
  * Represents a game's round
  *
