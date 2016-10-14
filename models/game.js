@@ -1,3 +1,5 @@
+// representation of game
+
 var _ = require('lodash');
 var playerModel = require('./player');
 var roundModel = require("./round");
