@@ -35,6 +35,7 @@ Deck.prototype.sorted = function(){
 
 /*
  * Mix a sorted deck
+ * Mezcla de mazo
  */
 Deck.prototype.mix = function(){
 	return _.shuffle(this.sorted());
