@@ -59,7 +59,7 @@ function Round(game, turn){
 
 }
 /*
- * Generate a new deck mixed and gives to players the correspondent cards
+ * Creo un nuevo mazo y reparto 3 cartas para cada jugador
  */
 Round.prototype.dealCards = function() {
   d = new Deck();
