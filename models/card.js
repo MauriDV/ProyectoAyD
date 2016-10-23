@@ -47,7 +47,7 @@ Card.prototype.show = function(){
 };
 
 /*
- * Compares two cards
+ * Establecer carta ganadora
  *   @card: the card to compare this
  *
  * Returns:
