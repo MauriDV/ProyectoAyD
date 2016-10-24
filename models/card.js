@@ -21,6 +21,10 @@
 *       2  -  5
 *       1  -  4
 */
+
+/*
+* vector para representar el peso de las cartas.
+*/
 var weight = {
   'oro':    [ 7, 8, 9, 1, 2, 3, 10, 0, 0, 0, 5, 6],
   'copa':   [ 7, 8, 9, 1, 2, 3,  4, 0, 0, 0, 5, 6],
