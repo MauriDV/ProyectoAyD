@@ -40,6 +40,7 @@ block content
           h2 Posibles jugadas
         form(role='form', action="/play",method="post")
           input(type="hidden", name="idPartida", value="#{juego._id}")
+          // si envido es un estado posible, entonces se mostrara.
           #{a = juego.currentRound.posiblesStates()}
           each item in a
             if item == "playCard"
