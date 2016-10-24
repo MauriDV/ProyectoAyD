@@ -16,6 +16,10 @@ var mongoose = require("mongoose");
 var deckModel = require("./deck");
 var Deck  = deckModel.deck;
 
+
+/*
+* Maquina de estados
+*/
 function newTrucoFSM(){
   var fsm = StateMachine.create({
     initial: 'init',
