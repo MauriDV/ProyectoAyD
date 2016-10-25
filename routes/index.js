@@ -41,6 +41,8 @@ router.get('/login', function(req, res) {
 
 router.post('/login', passport.authenticate('local'), function(req, res) {
     res.redirect('/');
+    console.log("SESION DE: "+req.session.passport.user);
+    var userSession = req.session.passport.user;
 });
 
 // LOGOUT
