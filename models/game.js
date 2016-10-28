@@ -22,14 +22,9 @@ var GameSchema = new Schema({
   score:        { type : Array , default : [0, 0] },
 });
 
-function Game(player1, player2){
-  this.player1 = player1;
-  this.player2 = player2;
-  this.rounds = [];
-  this.currentHand = this.player2;
-  this.currentRound = undefined;
-  this.score = [0,0];
-}
+
+
+var Game= mongoose.model('Game',GameSchema);
 
 Game.prototype.newRound = function(){
   var round = new Round(this, this.currentHand);

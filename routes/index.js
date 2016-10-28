@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var Player = require('../models/player').player
 var Deck = require('../models/deck').deck
 var Card = require('../models/card').card
-var Round = require('../models/card').round
+var Round = require('../models/round').round
 var router = express.Router();
 
 var Game = require("../models/game").game;
@@ -61,9 +61,34 @@ router.get('/createNewGame', function(req,res) {
 router.post('/createNewGame', function(req,res) {
     var jugador1 = new Player({name:req.session.passport.user});
     var jugador2 = new Player({name:null});
-    g = new Game(jugador1,jugador2);
+	var g = new Game({
+          name : req.body.nGame,
+    	  player1 : jugador1,
+          player2 : jugador2,
+          currentHand : jugador1,
+    }); 
     g.newRound();
     g.currentRound.dealCards();
+	console.log(g.currentRound.posiblesStates());
+	g.save(function(err){
+		if (err){
+             	console.log("ERROR: "+err);
+        }
+		else{
+				Game.findOne(function(err,game){
+					console.log(game)
+					var p = game.currentRound;
+					p = p.__proto__ = Round.prototype
+					p.newTrucoFSM(game.currentRound.fsm.current);
+					game.currentRound = p;
+					console.log(game.currentRound.posiblesStates());	
+							
+				})		
+		}
+	
+
+
+	})	
     res.redirect("/play");
     // jugador1.save(function(err,p1){
     //     if (err){

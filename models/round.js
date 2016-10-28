@@ -15,14 +15,16 @@ var StateMachine = require("../node_modules/javascript-state-machine/state-machi
 var mongoose = require("mongoose");
 var deckModel = require("./deck");
 var Deck  = deckModel.deck;
+var PlayerSchema= require("./player").playerSchema
 
 
 /*
 * Maquina de estados
 */
-function newTrucoFSM(){
+function newTrucoFSM(state){
+  state = state || 'init';
   var fsm = StateMachine.create({
-    initial: 'init',
+    initial: state,
     events: [
       { name: 'playCard', from: 'init',                           to: 'primercarta' },
       { name: 'envido',    from: ['init', 'primercarta'],         to: 'envido' },
@@ -53,7 +55,8 @@ function newTrucoFSM(){
 e = "";
 
 function Round(game, turn){
-  this.game = game
+  this.player1=game.player1
+  this.player2=game.player2
   this.currentTurn = turn;
   this.fsm = newTrucoFSM();
   this.status = 'running';
@@ -68,8 +71,8 @@ function Round(game, turn){
 Round.prototype.dealCards = function() {
   d = new Deck();
   cartas = d.mix();
-  this.game.player1.setPointsCards(cartas[0],cartas[2],cartas[4]);
-  this.game.player2.setPointsCards(cartas[1],cartas[3],cartas[5]);
+  this.player1.setPointsCards(cartas[0],cartas[2],cartas[4]);
+  this.player2.setPointsCards(cartas[1],cartas[3],cartas[5]);
 };
 
 Round.prototype.changeTurn = function(){
@@ -88,7 +91,7 @@ Round.prototype.cartasJugadas = function() {
  * returns the oposite player
  */
 Round.prototype.switchPlayer = function(player) {
-  return (this.game.player1) === player ? (this.game.player2) : (this.game.player1);
+  return (this.player1) === player ? (this.player2) : (this.player1);
 };
 
 /*
@@ -132,7 +135,7 @@ Round.prototype.calculateScoreE = function(player,action){
       this.fsm.noQuiero();
     }
   }
-  if (player.getName()==this.game.player1.getName()) {
+  if (player.getName()==this.player1.getName()) {
     if(action=='quiero'){
       var aux1 = this.score[1];
       var aux0 = this.score[0]
@@ -170,38 +173,38 @@ Round.prototype.confrontCards = function(player,card1,card2){
 
 Round.prototype.calculateScoreP = function(p1,p2) {
   if((p1.aux < 2)&&(this.esTruco==true)){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
+    this.player1.aux=0;
+    this.player2.aux=0;
     this.status="stop";
-    if(this.game.player1.name==p1.name){
+    if(this.player1.name==p1.name){
       this.game.score[0]+=2
     }else{
       this.game.score[1]+=2
     }
   }else if((p2.aux < 2)&&(this.esTruco==true)){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
+    this.player1.aux=0;
+    this.player2.aux=0;
     this.status="stop";
-    if(this.game.player1.name==p2.name){
+    if(this.player1.name==p2.name){
       this.game.score[0]+=2
     }else{
       this.game.score[1]+=2
     }
   }
   if(p1.aux==2){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
+    this.player1.aux=0;
+    this.player2.aux=0;
     this.status="stop";
-    if(this.game.player1.name==p1.name){
+    if(this.player1.name==p1.name){
       if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
     }else{
       if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
     }
   }else if(p2.aux==2){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
+    this.player1.aux=0;
+    this.player2.aux=0;
     this.status="stop";
-    if(this.game.player1.name==p2.name){
+    if(this.player1.name==p2.name){
       if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
     }else{
       if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
@@ -220,7 +223,7 @@ Round.prototype.play = function(player, action, value) {
 
   this.fsm[action];
 
-  // if action is envido move to envido state  
+  //if action is envido move to envido state  
   if (action=="envido") {
     this.fsm.envido();
   };
