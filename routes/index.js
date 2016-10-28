@@ -10,6 +10,8 @@ var router = express.Router();
 
 var Game = require("../models/game").game;
 
+g = undefined;
+
 /* GET home page. */
 router.get('/', function (req, res) {
   res.render('index', { user : req.user});
@@ -58,7 +60,7 @@ router.get('/createNewGame', function(req,res) {
 
 router.post('/createNewGame', function(req,res) {
     var jugador1 = new Player({name:req.session.passport.user});
-    var jugador2 = new Player({name:"usuarioTest"});
+    var jugador2 = new Player({name:null});
     g = new Game(jugador1,jugador2);
     g.newRound();
     g.currentRound.dealCards();
@@ -95,6 +97,15 @@ router.get('/newRound',function(req,res) {
 })
 
 router.get('/play',function(req,res){
+
+    if(g==undefined){
+        res.redirect('/');
+    }
+    if(g.player2.name==null){
+        if(req.session.passport.user!=g.player1.getName()){
+            g.player2.name = req.session.passport.user;
+        }
+    }
     res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
     // var juego = Game.findOne({_id:req.query.gId},function(err,game){
     //     if (err){

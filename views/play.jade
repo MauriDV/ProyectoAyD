@@ -25,6 +25,8 @@ block content
             each i in juego.currentRound.cartasJugadas()
               h3 #{i.show()}
         // muestro las cartas que tiene disponible un jugador
+        if juego.player2.name == null
+          h1 Esperando oponente
         if juego.player1 == juego.currentRound.currentTurn && us == p1
           h1 Turno de: #{juego.player1.getName()}
           if juego.currentRound.currentTurn.card1 !== null
