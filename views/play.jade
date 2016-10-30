@@ -22,7 +22,7 @@ block content
       else
         .mesa
           h1
-            each i in juego.currentRound.cartasJugadas()
+            each i in juego.currentRound.cartasJugadas
               h3 #{i.show()}
         // muestro las cartas que tiene disponible un jugador
         if juego.player2.name == null

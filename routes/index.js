@@ -69,27 +69,14 @@ router.post('/createNewGame', function(req,res) {
     }); 
     g.newRound();
     g.currentRound.dealCards();
-	console.log(g.currentRound.posiblesStates());
-	g.save(function(err){
+	g.save(function(err,juego){
 		if (err){
              	console.log("ERROR: "+err);
         }
 		else{
-				Game.findOne(function(err,game){
-					console.log(game)
-					var p = game.currentRound;
-					p = p.__proto__ = Round.prototype
-					p.newTrucoFSM(game.currentRound.fsm.current);
-					game.currentRound = p;
-					console.log(game.currentRound.posiblesStates());	
-							
-				})		
+			res.redirect("/play/"+juego._id);		
 		}
-	
-
-
-	})	
-    res.redirect("/play");
+	})
     // jugador1.save(function(err,p1){
     //     if (err){
     //         console.log("ERROR j1: "+err);
@@ -121,17 +108,28 @@ router.get('/newRound',function(req,res) {
     res.redirect("/play");
 })
 
-router.get('/play',function(req,res){
+router.get('/play/:id',function(req,res){
 
-    if(g==undefined){
-        res.redirect('/');
-    }
-    if(g.player2.name==null){
-        if(req.session.passport.user!=g.player1.getName()){
-            g.player2.name = req.session.passport.user;
+    Game.findOne({_id:req.params.id},function(err,g){
+        if(err){
+            console.log("ERROR: "+err);
+        }else{
+            var p = g.currentRound;
+            p = p.__proto__ = Round.prototype
+            console.log(p);
+            p.estadosPosibles = p.newTrucoFSM(g.currentRound.fsm.current).transitions();
+            p.playedCards = p.cartasJugadas();
+            p.currentTurn = p.
+            g.currentRound = p;
+            if(g.player2.name==null){
+                if(req.session.passport.user!=g.player1.getName()){
+                    g.player2.name = req.session.passport.user;
+                }
+            }
+            console.log(g.currentRound)
+            res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
         }
-    }
-    res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
+    });
     // var juego = Game.findOne({_id:req.query.gId},function(err,game){
     //     if (err){
     //         console.log("ERROR: "+err);

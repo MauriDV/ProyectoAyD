@@ -17,48 +17,13 @@ var deckModel = require("./deck");
 var Deck  = deckModel.deck;
 var PlayerSchema= require("./player").playerSchema
 
-
-/*
-* Maquina de estados
-*/
-function newTrucoFSM(state){
-  state = state || 'init';
-  var fsm = StateMachine.create({
-    initial: state,
-    events: [
-      { name: 'playCard', from: 'init',                           to: 'primercarta' },
-      { name: 'envido',    from: ['init', 'primercarta'],         to: 'envido' },
-      { name: 'envidox2',   from: 'envido'              ,            to: 'envidox2'},
-      { name: 'truco',     from: ['init', 'playedcard','primercarta'
-                                  ,'quiero','noQuiero'],          to: 'truco'  },
-      { name: 'playCard', from: ['quiero', 'noQuiero',
-                                  'primercarta', 'playedcard'],  to: 'playedcard' },
-      { name: 'quiero',    from: ['envidox2','envido', 'truco'],              to: 'quiero'  },
-      { name: 'noQuiero', from: ['envidox2','envido', 'truco'],              to: 'noQuiero' },
-    ],
-
-    callbacks: {
-      onchangestate: function(event, from, to) {
-        if ((from=="envido")&&(to=="envidox2")){
-          e=to
-        }else if (to=="truco"){
-          e=to;
-        }
-      }
-    }
-
-  });
-
-  return fsm;
-}
-
 e = "";
 
 function Round(game, turn){
   this.player1=game.player1
   this.player2=game.player2
   this.currentTurn = turn;
-  this.fsm = newTrucoFSM();
+  this.fsm = null;
   this.status = 'running';
   this.score = [0, 0];
   this.esTruco = false;
@@ -73,6 +38,7 @@ Round.prototype.dealCards = function() {
   cartas = d.mix();
   this.player1.setPointsCards(cartas[0],cartas[2],cartas[4]);
   this.player2.setPointsCards(cartas[1],cartas[3],cartas[5]);
+  this.fsm = this.newTrucoFSM();
 };
 
 Round.prototype.changeTurn = function(){
@@ -266,5 +232,39 @@ Round.prototype.play = function(player, action, value) {
   // Change player's turn
   return this.changeTurn();
 };
+
+/*
+* Maquina de estados
+*/
+Round.prototype.newTrucoFSM = function(state){
+  state = state || 'init';
+  var fsm = StateMachine.create({
+    initial: state,
+    events: [
+      { name: 'playCard', from: 'init',                           to: 'primercarta' },
+      { name: 'envido',    from: ['init', 'primercarta'],         to: 'envido' },
+      { name: 'envidox2',   from: 'envido'              ,            to: 'envidox2'},
+      { name: 'truco',     from: ['init', 'playedcard','primercarta'
+                                  ,'quiero','noQuiero'],          to: 'truco'  },
+      { name: 'playCard', from: ['quiero', 'noQuiero',
+                                  'primercarta', 'playedcard'],  to: 'playedcard' },
+      { name: 'quiero',    from: ['envidox2','envido', 'truco'],              to: 'quiero'  },
+      { name: 'noQuiero', from: ['envidox2','envido', 'truco'],              to: 'noQuiero' },
+    ],
+
+    callbacks: {
+      onchangestate: function(event, from, to) {
+        if ((from=="envido")&&(to=="envidox2")){
+          e=to
+        }else if (to=="truco"){
+          e=to;
+        }
+      }
+    }
+
+  });
+
+  return fsm;
+}
 
 module.exports.round = Round;
