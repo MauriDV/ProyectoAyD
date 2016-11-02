@@ -5,8 +5,8 @@ extends layout
 block content
 
   h1
-      p Puntos de #{juego.player1.getName()}: #{juego.score[0]}
-      p Puntos de #{juego.player2.getName()}: #{juego.score[1]}
+      p Puntos de #{juego.player1.name}: #{juego.score[0]}
+      p Puntos de #{juego.player2.name}: #{juego.score[1]}
       p Sesion de #{us}
       p #{p1}
       p #{p2}
@@ -23,18 +23,18 @@ block content
         .mesa
           h1
             each i in juego.currentRound.cartasJugadas
-              h3 #{i.show()}
+              h3 #{i}
         // muestro las cartas que tiene disponible un jugador
         if juego.player2.name == null
           h1 Esperando oponente
-        if juego.player1 == juego.currentRound.currentTurn && us == p1
-          h1 Turno de: #{juego.player1.getName()}
+        if juego.player1.name == juego.currentRound.currentTurn.name && us == p1
+          h1 Turno de: #{p1}
           if juego.currentRound.currentTurn.card1 !== null
-            p #1   #{juego.player1.card1.show()}
+            p #1   #{juego.player1.card1.number} - #{juego.player1.card1.suit}
           if juego.currentRound.currentTurn.card2 !== null
-            p #2   #{juego.player1.card2.show()}
+            p #2   #{juego.player1.card2.number} - #{juego.player1.card2.suit}
           if juego.currentRound.currentTurn.card3 !== null
-            p #3   #{juego.player1.card3.show()}
+            p #3   #{juego.player1.card3.number} - #{juego.player1.card2.suit}
           p Puntos del envido: #{juego.player1.pointsCards}
           h2 Posibles jugadas
           form(role='form', action="/play",method="post")
@@ -44,8 +44,8 @@ block content
             // si no-quiero es un estado posible, entonces se mostrara.
             // si truco es un estado posible, entonces se mostrara.
             // si EnvidoEnvido es un estado posible, entonces se mostrara.
-            #{a = juego.currentRound.posiblesStates()}
-            each item in a
+            //#{a = juego.currentRound.posiblesStates()}
+            each item in estados
               if item == "playCard"
                 if juego.currentRound.currentTurn.card1 !== null
                   input(type="submit", name="action", value="Jugar Carta #1")
@@ -60,14 +60,14 @@ block content
                 else
                   input(type="submit", name="action", value="#{item}")
             &nbsp;
-        if juego.player2 == juego.currentRound.currentTurn && us == p2
-          h1 Turno de: #{juego.player2.getName()}
+        if juego.player2.name == juego.currentRound.currentTurn.name && us == p2
+          h1 Turno de: #{p2}
           if juego.currentRound.currentTurn.card1 !== null
-            p #1   #{juego.player2.card1.show()}
+            p #1   #{juego.player2.card1.name} - #{juego.player2.card1.suit}
           if juego.currentRound.currentTurn.card2 !== null
-            p #2   #{juego.player2.card2.show()}
+            p #2   #{juego.player2.card2.name} - #{juego.player2.card2.suit}
           if juego.currentRound.currentTurn.card3 !== null  
-            p #3   #{juego.player2.card3.show()}
+            p #3   #{juego.player2.card3.name} - #{juego.player2.card3.suit}
           p Puntos del envido: #{juego.player2.pointsCards}
           h2 Posibles jugadas
           form(role='form', action="/play",method="post")

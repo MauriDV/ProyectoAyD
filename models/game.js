@@ -14,9 +14,9 @@ var PlayerSchema = playerModel.playerSchema
 
 var GameSchema = new Schema({
   name:         String,
-  player1:      PlayerSchema,
-  player2:      PlayerSchema,
-  currentHand:  PlayerSchema,
+  player1:      Object,
+  player2:      Object,
+  currentHand:  Object,
   currentRound: Object,
   rounds:       { type : Array , default : [] },
   score:        { type : Array , default : [0, 0] },

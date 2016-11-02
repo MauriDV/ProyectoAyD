@@ -23,12 +23,11 @@ function Round(game, turn){
   this.player1=game.player1
   this.player2=game.player2
   this.currentTurn = turn;
-  this.fsm = null;
   this.status = 'running';
   this.score = [0, 0];
   this.esTruco = false;
   this.playedCards = [];
-
+  this.fsm = this.newTrucoFSM();
 }
 /*
  * Creo un nuevo mazo y reparto 3 cartas para cada jugador
@@ -38,7 +37,6 @@ Round.prototype.dealCards = function() {
   cartas = d.mix();
   this.player1.setPointsCards(cartas[0],cartas[2],cartas[4]);
   this.player2.setPointsCards(cartas[1],cartas[3],cartas[5]);
-  this.fsm = this.newTrucoFSM();
 };
 
 Round.prototype.changeTurn = function(){
@@ -210,7 +208,7 @@ Round.prototype.play = function(player, action, value) {
   }
 
   if ((action=="playCard")&&(this.status=="running")){
-    this.playedCards.push(value);
+    this.playedCards.push(value)
     if (value==player.card1)
       player.card1=null;
     else if(value == player.card2){
@@ -220,8 +218,11 @@ Round.prototype.play = function(player, action, value) {
     }
     if (count==0){
       valueAux = value;
+      console.log("carta 1 jugada");
       this.fsm.playCard();
+      console.log("avanzamos en la maquina de estados")
       count++;
+      console.log("incremento el contador")
     }else{
       this.confrontCards(player,valueAux,value);
       this.calculateScoreP(player,this.switchPlayer(player));

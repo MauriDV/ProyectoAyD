@@ -59,8 +59,8 @@ router.get('/createNewGame', function(req,res) {
 });
 
 router.post('/createNewGame', function(req,res) {
-    var jugador1 = new Player({name:req.session.passport.user});
-    var jugador2 = new Player({name:null});
+    var jugador1 = new Player(req.session.passport.user);
+    var jugador2 = new Player(null);
 	var g = new Game({
           name : req.body.nGame,
     	  player1 : jugador1,
@@ -68,13 +68,13 @@ router.post('/createNewGame', function(req,res) {
           currentHand : jugador1,
     }); 
     g.newRound();
-    g.currentRound.dealCards();
+    g.currentRound.dealCards()
 	g.save(function(err,juego){
 		if (err){
              	console.log("ERROR: "+err);
         }
 		else{
-			res.redirect("/play/"+juego._id);		
+			res.redirect("/play?idPartida="+juego._id);		
 		}
 	})
     // jugador1.save(function(err,p1){
@@ -108,26 +108,32 @@ router.get('/newRound',function(req,res) {
     res.redirect("/play");
 })
 
-router.get('/play/:id',function(req,res){
+router.get('/play',function(req,res){
 
-    Game.findOne({_id:req.params.id},function(err,g){
+    Game.findOne({_id:req.query.idPartida},function(err,g){
         if(err){
             console.log("ERROR: "+err);
         }else{
-            var p = g.currentRound;
-            p = p.__proto__ = Round.prototype
-            console.log(p);
-            p.estadosPosibles = p.newTrucoFSM(g.currentRound.fsm.current).transitions();
-            p.playedCards = p.cartasJugadas();
-            p.currentTurn = p.
-            g.currentRound = p;
             if(g.player2.name==null){
-                if(req.session.passport.user!=g.player1.getName()){
+                if(req.session.passport.user!=g.player1.name){
                     g.player2.name = req.session.passport.user;
                 }
             }
-            console.log(g.currentRound)
-            res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
+            var p = g.currentRound;
+            p = p.__proto__ = Round.prototype
+            if(g.player1.name == req.session.passport.user){
+                p.player1 = g.player1;
+                p.player2 = g.player2;
+            }else{
+                p.player1 = g.player2;
+                p.player2 = g.player1;
+            }
+            p.status = 'running'
+            p.estadosPosibles = p.newTrucoFSM(g.currentRound.fsm.current).transitions();
+            p.playedCards = p.cartasJugadas();
+            p.currentTurn = p.player2;
+            g.currentRound = p
+            res.render("play",{juego:g,us:req.session.passport.user,p1:p.player1.name,p2:p.player2.name,estados:p.estadosPosibles});
         }
     });
     // var juego = Game.findOne({_id:req.query.gId},function(err,game){
@@ -144,32 +150,74 @@ router.get('/play/:id',function(req,res){
 });
 
 router.post('/play',function(req,res){
+    var idGame = req.body.idPartida;
     var estado=req.body.action;
-    if (estado=='envido'){
-        g.play(g.currentRound.currentTurn,estado);
-    }
-    if (estado=='envidox2'){
-        g.play(g.currentRound.currentTurn,estado)
-    }
-    if (estado=='quiero'){
-        g.play(g.currentRound.currentTurn,estado);
-    }
-    if (estado=='noQuiero'){
-        g.play(g.currentRound.currentTurn,estado);
-    }
-    if (estado=='truco'){
-        g.play(g.currentRound.currentTurn,estado)
-    }
-    if (estado=="Jugar Carta #1"){
-        g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card1)
-    }
-    if (estado=="Jugar Carta #2"){
-        g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card2)
-    }
-    if (estado=="Jugar Carta #3"){
-        g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
-    }
-    res.redirect("/play")
+
+    Game.findOne({_id:idGame},function(err,g){
+
+        var p = g.currentRound;
+        p = p.__proto__ = Round.prototype;
+        p.fsm = p.newTrucoFSM(g.currentRound.fsm.current)
+        p.playedCards = g.currentRound.playedCards;
+        g.currentRound = p;
+        console.log(g.currentRound.fsm.current);
+        console.log(g.currentRound.currentTurn.name)
+        if(err){
+            console.log("error recuperando partida")
+        }
+        if (estado=='envido'){
+            g.play(g.currentRound.currentTurn,estado);
+        }
+        if (estado=='envidox2'){
+            g.play(g.currentRound.currentTurn,estado)
+        }
+        if (estado=='quiero'){
+            g.play(g.currentRound.currentTurn,estado);
+        }
+        if (estado=='noQuiero'){
+            g.play(g.currentRound.currentTurn,estado);
+        }
+        if (estado=='truco'){
+            g.play(g.currentRound.currentTurn,estado)
+        }
+        if (estado=="Jugar Carta #1"){
+        	var realCard = new Card(g.currentRound.currentTurn.card1.number,g.currentRound.currentTurn.card1.suit);
+            g.play(g.currentRound.currentTurn,"playCard",realCard);
+        }
+        if (estado=="Jugar Carta #2"){
+            g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card2)
+        }
+        if (estado=="Jugar Carta #3"){
+            g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
+        }
+        console.log("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+        console.log(g.currentRound.fsm.current);
+        console.log(g.currentRound.currentTurn.name)
+        
+        Game.findOne({_id:idGame}, function(err,juego){
+        	var p = juego.currentRound;
+       		p = p.__proto__ = Round.prototype;
+       		console.log("p.fsm")
+       		console.log(p.fsm.current)
+       		console.log("g.currentRound.fsm.current")
+       		console.log(g.currentRound.fsm.current)
+       		p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
+       		p.playedCards = g.currentRound.playedCards;
+        	juego.currentRound = p;
+        	juego.name = g.name;
+        	juego.player1=g.player1;
+			juego.player2=g.player2;
+			juego.currentHand= g.currentHand; 
+			juego.rounds= g.rounds;
+			juego.score=g.score;
+        	juego.save(function(){
+	        	if(err){
+	        		console.log("ERROR: update - "+err)
+	        	}
+	        });
+        });
+        res.redirect("/play?idPartida="+idGame)
+    });
 });
 
 module.exports = router;

@@ -2,16 +2,16 @@
  * Player representation.
  */
 
-
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var PlayerSchema = new Schema({
-  name: String,
-  aux: {type:Number,default:0}
-});
+var Player = function(n){
+  this.name = n;
+  this.aux = 0;
+  this.card1=null;
+  this.card2=null;
+  this.card3=null;
+};
 
 //calculate the points for three cards 
-PlayerSchema.methods.setPointsCards = function(c1,c2,c3) {
+Player.prototype.setPointsCards = function(c1,c2,c3) {
   this.card1=c1;
   this.card2=c2;
   this.card3=c3;
@@ -19,25 +19,21 @@ PlayerSchema.methods.setPointsCards = function(c1,c2,c3) {
 };
 
 //Show cards of this player
-PlayerSchema.methods.showCards = function() {
+Player.prototype.showCards = function() {
 	return (this.card1.show() +" "+this.card2.show() +" "+ this.card3.show());
 };
 
 //return the name of de player
-PlayerSchema.methods.getName = function() {
+Player.prototype.getName = function() {
 	return this.name;
 };
 
 //return the points of the cards to play envido
-PlayerSchema.methods.getPointsCards = function() {
+Player.prototype.getPointsCards = function() {
 	return this.pointsCards;
 };
 
-var Player = mongoose.model('Player', PlayerSchema);
-
-
 module.exports.player = Player;
-module.exports.playerSchema = PlayerSchema;
 
 
 
