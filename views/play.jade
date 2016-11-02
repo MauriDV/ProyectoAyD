@@ -77,8 +77,8 @@ block content
             // si no-quiero es un estado posible, entonces se mostrara.
             // si truco es un estado posible, entonces se mostrara.
             // si EnvidoEnvido es un estado posible, entonces se mostrara.
-            #{a = juego.currentRound.posiblesStates()}
-            each item in a
+            //#{a = juego.currentRound.posiblesStates()}
+            each item in estados
               if item == "playCard"
                 if juego.currentRound.currentTurn.card1 !== null
                   input(type="submit", name="action", value="Jugar Carta #1")

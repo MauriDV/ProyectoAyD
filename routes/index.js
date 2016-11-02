@@ -65,7 +65,7 @@ router.post('/createNewGame', function(req,res) {
           name : req.body.nGame,
     	  player1 : jugador1,
           player2 : jugador2,
-          currentHand : jugador1,
+          currentHand : jugador2,
     }); 
     g.newRound();
     g.currentRound.dealCards()
@@ -108,32 +108,44 @@ router.get('/newRound',function(req,res) {
     res.redirect("/play");
 })
 
+router.get('/esperando', function(req,res){
+
+});
+
 router.get('/play',function(req,res){
 
     Game.findOne({_id:req.query.idPartida},function(err,g){
+
         if(err){
             console.log("ERROR: "+err);
         }else{
             if(g.player2.name==null){
                 if(req.session.passport.user!=g.player1.name){
                     g.player2.name = req.session.passport.user;
+                    Game.update({_id:req.query.idPartida}, { $set :{ player2 : g.player2}},function(err){
+                        if(err){
+                            console.log("ALTOKE PERRO");
+                        }
+                    });
                 }
+
             }
             var p = g.currentRound;
             p = p.__proto__ = Round.prototype
-            if(g.player1.name == req.session.passport.user){
-                p.player1 = g.player1;
-                p.player2 = g.player2;
-            }else{
-                p.player1 = g.player2;
-                p.player2 = g.player1;
-            }
-            p.status = 'running'
-            p.estadosPosibles = p.newTrucoFSM(g.currentRound.fsm.current).transitions();
-            p.playedCards = p.cartasJugadas();
+            console.log(g.currentRound.player1)
+            console.log(g.currentRound.player2)
+            p.player1 = g.currentRound.player1 
+            p.player2 = g.currentRound.player2
+            console.log(p.player2)
             p.currentTurn = p.player2;
-            g.currentRound = p
-            res.render("play",{juego:g,us:req.session.passport.user,p1:p.player1.name,p2:p.player2.name,estados:p.estadosPosibles});
+            p.status = 'running';
+            p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
+            p.estadosPosibles = p.fsm.transitions();
+            p.playedCards = p.cartasJugadas();
+            console.log("TURNO DE: *******************************************************************");
+            console.log(p.currentTurn);
+            g.currentRound = p;
+            res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles});
         }
     });
     // var juego = Game.findOne({_id:req.query.gId},function(err,game){
@@ -194,30 +206,20 @@ router.post('/play',function(req,res){
         console.log(g.currentRound.fsm.current);
         console.log(g.currentRound.currentTurn.name)
         
-        Game.findOne({_id:idGame}, function(err,juego){
-        	var p = juego.currentRound;
-       		p = p.__proto__ = Round.prototype;
-       		console.log("p.fsm")
-       		console.log(p.fsm.current)
-       		console.log("g.currentRound.fsm.current")
-       		console.log(g.currentRound.fsm.current)
-       		p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
-       		p.playedCards = g.currentRound.playedCards;
-        	juego.currentRound = p;
-        	juego.name = g.name;
-        	juego.player1=g.player1;
-			juego.player2=g.player2;
-			juego.currentHand= g.currentHand; 
-			juego.rounds= g.rounds;
-			juego.score=g.score;
-        	juego.save(function(){
-	        	if(err){
-	        		console.log("ERROR: update - "+err)
-	        	}
-	        });
-        });
-        res.redirect("/play?idPartida="+idGame)
+        Game.update({ _id: g._id }, { $set :{currentRound : p }},function (err,result){
+            if(err){
+                console.log("ERROR en update: "+ err);
+            }
+        })
     });
+
+    Game.findOne({_id:idGame}, function(err,g){
+        console.log(g.currentRound.currentTurn)
+    });
+
+
+        
+    res.redirect("/play?idPartida="+idGame)
 });
 
 module.exports = router;
