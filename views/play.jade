@@ -63,11 +63,11 @@ block content
         if juego.player2.name == juego.currentRound.currentTurn.name && us == p2
           h1 Turno de: #{p2}
           if juego.currentRound.currentTurn.card1 !== null
-            p #1   #{juego.player2.card1.name} - #{juego.player2.card1.suit}
+            p #1   #{juego.currentRound.player2.card1.number} - #{juego.currentRound.player2.card1.suit}
           if juego.currentRound.currentTurn.card2 !== null
-            p #2   #{juego.player2.card2.name} - #{juego.player2.card2.suit}
+            p #2   #{juego.currentRound.player2.card2.number} - #{juego.currentRound.player2.card2.suit}
           if juego.currentRound.currentTurn.card3 !== null  
-            p #3   #{juego.player2.card3.name} - #{juego.player2.card3.suit}
+            p #3   #{juego.currentRound.player2.card3.number} - #{juego.currentRound.player2.card3.suit}
           p Puntos del envido: #{juego.player2.pointsCards}
           h2 Posibles jugadas
           form(role='form', action="/play",method="post")

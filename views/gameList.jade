@@ -1,0 +1,13 @@
+extends layout
+block content
+
+	h1 Lista de partidas
+
+	hr
+
+	form(role='form', action="/juegos",method="post")
+		ul
+		each i in j
+			ol
+				a(href='/configUser?idPartida=#{i._id}')
+					button.btn.btn-primary(type="button") #{i.name}

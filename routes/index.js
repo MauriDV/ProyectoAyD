@@ -67,15 +67,13 @@ router.post('/createNewGame', function(req,res) {
           player2 : jugador2,
           currentHand : jugador2,
     }); 
-    g.newRound();
-    g.currentRound.dealCards()
 	g.save(function(err,juego){
 		if (err){
              	console.log("ERROR: "+err);
         }
 		else{
 			res.redirect("/play?idPartida="+juego._id);		
-		}
+        }
 	})
     // jugador1.save(function(err,p1){
     //     if (err){
@@ -101,16 +99,33 @@ router.post('/createNewGame', function(req,res) {
     // });
 })
 
-router.get('/newRound',function(req,res) {
+router.get('/juegos',function(req,res){
+    Game.find({},function(err,games){
+        res.render('gameList',{j:games});
+    })
+});
 
+router.get('/newRound',function(req,res) {
     g.newRound();
     g.currentRound.dealCards();
     res.redirect("/play");
 })
 
-router.get('/esperando', function(req,res){
-
-});
+router.get('/configUser',function(req,res){
+    Game.findOne({_id:req.query.idPartida},function(err,g){
+        g.player2.name = req.session.passport.user;
+        g.newRound();
+        g.currentRound.dealCards()
+        g.currentRound.currentTurn = g.player2
+        Game.update({_id:req.query.idPartida}, { $set :{player1:g.player1, player2:g.player2, currentRound:g.currentRound}},function(err){
+            if(err){
+                console.log(err);
+            }else{
+                res.redirect("/play?idPartida="+req.query.idPartida)
+            }
+        });
+    });
+})
 
 router.get('/play',function(req,res){
 
@@ -119,33 +134,34 @@ router.get('/play',function(req,res){
         if(err){
             console.log("ERROR: "+err);
         }else{
-            if(g.player2.name==null){
-                if(req.session.passport.user!=g.player1.name){
-                    g.player2.name = req.session.passport.user;
-                    Game.update({_id:req.query.idPartida}, { $set :{ player2 : g.player2}},function(err){
-                        if(err){
-                            console.log("ALTOKE PERRO");
-                        }
-                    });
-                }
 
+            if(g.currentRound == undefined){
+                res.render('play',{juego:g});
+            }else{
+
+                console.log("GAME WITHOUT CONFIGURATIONS");
+                console.log(g)
+                var p = g.currentRound;
+                p = p.__proto__ = Round.prototype
+                console.log("ROUND PROTOTYPED")
+                console.log(p)
+                p.player1 = g.currentRound.player1 
+                p.player2 = g.currentRound.player2
+                console.log(g.currentTurn)
+                p.currentTurn = p.player2;
+                p.status = 'running';
+                console.log("ESTADO");
+                console.log(g.currentRound.fsm.current)
+                p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
+                p.estadosPosibles = p.fsm.transitions();
+                p.playedCards = p.cartasJugadas();
+                console.log("TURNO DE: *******************************************************************");
+                console.log(p.currentTurn);
+                g.currentRound = p;
+                console.log("GAME");
+                console.log(g.currentRound)
+                res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles});
             }
-            var p = g.currentRound;
-            p = p.__proto__ = Round.prototype
-            console.log(g.currentRound.player1)
-            console.log(g.currentRound.player2)
-            p.player1 = g.currentRound.player1 
-            p.player2 = g.currentRound.player2
-            console.log(p.player2)
-            p.currentTurn = p.player2;
-            p.status = 'running';
-            p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
-            p.estadosPosibles = p.fsm.transitions();
-            p.playedCards = p.cartasJugadas();
-            console.log("TURNO DE: *******************************************************************");
-            console.log(p.currentTurn);
-            g.currentRound = p;
-            res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles});
         }
     });
     // var juego = Game.findOne({_id:req.query.gId},function(err,game){
@@ -172,8 +188,6 @@ router.post('/play',function(req,res){
         p.fsm = p.newTrucoFSM(g.currentRound.fsm.current)
         p.playedCards = g.currentRound.playedCards;
         g.currentRound = p;
-        console.log(g.currentRound.fsm.current);
-        console.log(g.currentRound.currentTurn.name)
         if(err){
             console.log("error recuperando partida")
         }
@@ -202,23 +216,13 @@ router.post('/play',function(req,res){
         if (estado=="Jugar Carta #3"){
             g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
         }
-        console.log("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-        console.log(g.currentRound.fsm.current);
-        console.log(g.currentRound.currentTurn.name)
         
         Game.update({ _id: g._id }, { $set :{currentRound : p }},function (err,result){
             if(err){
                 console.log("ERROR en update: "+ err);
             }
         })
-    });
-
-    Game.findOne({_id:idGame}, function(err,g){
-        console.log(g.currentRound.currentTurn)
-    });
-
-
-        
+    });        
     res.redirect("/play?idPartida="+idGame)
 });
 

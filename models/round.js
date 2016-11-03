@@ -15,14 +15,14 @@ var StateMachine = require("../node_modules/javascript-state-machine/state-machi
 var mongoose = require("mongoose");
 var deckModel = require("./deck");
 var Deck  = deckModel.deck;
-var PlayerSchema= require("./player").playerSchema
+var Player= require("./player").player
 
 e = "";
 
 function Round(game, turn){
-  this.player1=game.player1
-  this.player2=game.player2
-  this.currentTurn = turn;
+  this.player1=new Player(game.player1.name)
+  this.player2=new Player(game.player2.name)
+  this.currentTurn = new Player(turn.name);
   this.status = 'running';
   this.score = [0, 0];
   this.esTruco = false;
