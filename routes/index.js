@@ -116,7 +116,6 @@ router.get('/configUser',function(req,res){
         g.player2.name = req.session.passport.user;
         g.newRound();
         g.currentRound.dealCards()
-        g.currentRound.currentTurn = g.player2
         Game.update({_id:req.query.idPartida}, { $set :{player1:g.player1, player2:g.player2, currentRound:g.currentRound}},function(err){
             if(err){
                 console.log(err);
@@ -136,29 +135,23 @@ router.get('/play',function(req,res){
         }else{
 
             if(g.currentRound == undefined){
-                res.render('play',{juego:g});
+                res.send('Esperando oponente');
             }else{
-
-                console.log("GAME WITHOUT CONFIGURATIONS");
-                console.log(g)
                 var p = g.currentRound;
                 p = p.__proto__ = Round.prototype
-                console.log("ROUND PROTOTYPED")
-                console.log(p)
                 p.player1 = g.currentRound.player1 
                 p.player2 = g.currentRound.player2
-                console.log(g.currentTurn)
-                p.currentTurn = p.player2;
+                if(p.currentTurn == undefined){
+                    p.currentTurn = p.player2;
+                }else{
+                    p.currentTurn = p.getTurn();
+                }
                 p.status = 'running';
-                console.log("ESTADO");
-                console.log(g.currentRound.fsm.current)
                 p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
                 p.estadosPosibles = p.fsm.transitions();
                 p.playedCards = p.cartasJugadas();
-                console.log("TURNO DE: *******************************************************************");
-                console.log(p.currentTurn);
                 g.currentRound = p;
-                console.log("GAME");
+                console.log("PLAYER 1");
                 console.log(g.currentRound)
                 res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles});
             }

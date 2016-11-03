@@ -43,6 +43,10 @@ Round.prototype.changeTurn = function(){
   return this.currentTurn = this.switchPlayer(this.currentTurn);
 }
 
+Round.prototype.getTurn = function() {
+  return this.currentTurn;
+};
+
 Round.prototype.posiblesStates = function() {
   return this.fsm.transitions();
 };
