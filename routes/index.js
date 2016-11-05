@@ -150,10 +150,15 @@ router.get('/play',function(req,res){
                 p.fsm = p.newTrucoFSM(g.currentRound.fsm.current);
                 p.estadosPosibles = p.fsm.transitions();
                 p.playedCards = p.cartasJugadas();
+                if(p.playedCards == undefined){
+                    p.playedCards = []
+                }else{
+                    p.playedCards = p.cartasJugadas();
+                }
                 g.currentRound = p;
                 console.log("PLAYER 1");
-                console.log(g.currentRound)
-                res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles});
+                console.log(g.currentRound.playedCards)
+                res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.name,p2:g.player2.name,estados:p.estadosPosibles,cj:p.playedCards});
             }
         }
     });
@@ -201,13 +206,17 @@ router.post('/play',function(req,res){
         }
         if (estado=="Jugar Carta #1"){
         	var realCard = new Card(g.currentRound.currentTurn.card1.number,g.currentRound.currentTurn.card1.suit);
+            var realPlayer = new Player(g.currentRound.currentTurn);
+            realPlayer.card1 = realCard;
             g.play(g.currentRound.currentTurn,"playCard",realCard);
         }
         if (estado=="Jugar Carta #2"){
-            g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card2)
+            var realCard = new Card(g.currentRound.currentTurn.card2.number,g.currentRound.currentTurn.card2.suit);
+            g.play(g.currentRound.currentTurn,"playCard",realCard);
         }
         if (estado=="Jugar Carta #3"){
-            g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
+            var realCard = new Card(g.currentRound.currentTurn.card3.number,g.currentRound.currentTurn.card3.suit);
+            g.play(g.currentRound.currentTurn,"playCard",realCard);
         }
         
         Game.update({ _id: g._id }, { $set :{currentRound : p }},function (err,result){

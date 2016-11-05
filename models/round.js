@@ -15,7 +15,8 @@ var StateMachine = require("../node_modules/javascript-state-machine/state-machi
 var mongoose = require("mongoose");
 var deckModel = require("./deck");
 var Deck  = deckModel.deck;
-var Player= require("./player").player
+var Player= require("./player").player;
+var Card = require("./card").card;
 
 e = "";
 
@@ -40,7 +41,11 @@ Round.prototype.dealCards = function() {
 };
 
 Round.prototype.changeTurn = function(){
-  return this.currentTurn = this.switchPlayer(this.currentTurn);
+  if(this.currentTurn == this.player1){
+    this.currentTurn = this.player2
+  }else{
+    this.currentTurn = this.player1
+  }
 }
 
 Round.prototype.getTurn = function() {
@@ -130,12 +135,17 @@ Round.prototype.calculateScoreE = function(player,action){
 
 Round.prototype.confrontCards = function(player,card1,card2){
   i = card1.confront(card2);
+  console.log(player)
   if(i==1 || i==0){
-    p = this.switchPlayer(player);
-    p.aux+=1;
-  }else{
-    player.aux+=1;
+    console.log("=1 o =0");
+    this.player2.aux += 1;
+    console.log(this.player2);
     this.changeTurn();
+  }else{
+    console.log("=-1");
+    console.log(player);
+    this.player.aux+=1;
+    console.log(this.player);
   }
 };
 
@@ -213,29 +223,41 @@ Round.prototype.play = function(player, action, value) {
 
   if ((action=="playCard")&&(this.status=="running")){
     this.playedCards.push(value)
-    if (value==player.card1)
-      player.card1=null;
-    else if(value == player.card2){
-      player.card2=null;
-    }else if(value==player.card3){
-      player.card3=null;
+    console.log(value);
+    if(player.card1 != null){
+      if ((value.number==player.card1.number) && (value.suit==player.card1.suit) && (value.weight==player.card1.weight)){
+        console.log("eliminamos la carta1");
+        player.card1=null;
+      }
     }
+    if(player.card2 != null){
+      if ((value.number==player.card2.number) && (value.suit==player.card2.suit) && (value.weight==player.card2.weight)){
+        console.log("eliminamos la carta2");
+        player.card2=null;
+      }
+    }
+    if(player.card3 != null){
+      if ((value.number==player.card3.number) && (value.suit==player.card3.suit) && (value.weight==player.card3.weight)){
+        console.log("eliminamos la carta3");
+        player.card3=null;
+      }
+    }
+
     if (count==0){
       valueAux = value;
-      console.log("carta 1 jugada");
       this.fsm.playCard();
-      console.log("avanzamos en la maquina de estados")
       count++;
-      console.log("incremento el contador")
     }else{
       this.confrontCards(player,valueAux,value);
-      this.calculateScoreP(player,this.switchPlayer(player));
+      this.calculateScoreP(this.player1,this.player2);
       this.fsm.playCard();
       count=0;
     };
   };
   // Change player's turn
-  return this.changeTurn();
+  this.changeTurn();
+  console.log("TURNO")
+  console.log(this.currentTurn);
 };
 
 /*
