@@ -10,7 +10,18 @@ var router = express.Router();
 
 var Game = require("../models/game").game;
 
-g = undefined;
+var Schema = mongoose.Schema;
+
+var matchSchema = new Schema({
+  name:         String,
+  j1:      String,
+  j2:      String,
+  score:        { type : Array , default : [0, 0] },
+  state:        String,
+  ganador: String
+});
+
+var Match = mongoose.model('Match', matchSchema);
 
 /* GET home page. */
 router.get('/', function (req, res) {
@@ -59,12 +70,23 @@ router.get('/createNewGame', function(req,res) {
 });
 
 router.post('/createNewGame', function(req,res) {
-    var jugador1 = new Player({name:req.session.passport.user});
-    var jugador2 = new Player({name:null});
-    g = new Game(jugador1,jugador2);
-    g.newRound();
-    g.currentRound.dealCards();
-    res.redirect("/play");
+    var jugador1 = new Player(req.session.passport.user);
+    var jugador2 = new Player(null);
+    var p = new Match({
+        name:req.body.nGame,
+        j1:jugador1.name,
+        j2:null,
+        score:[],
+        state:'esperando oponente',
+    })
+
+    p.save(function(err,partida){
+        if(err){
+            console.log('ERROR GUARDANDO PARTIDA');
+        }else{
+            res.redirect('/configUsers?idPartida='+partida._id)
+        }
+    });
     // jugador1.save(function(err,p1){
     //     if (err){
     //         console.log("ERROR j1: "+err);
@@ -89,6 +111,32 @@ router.post('/createNewGame', function(req,res) {
     // });
 })
 
+router.get('/configUsers',function(req,res){
+    Match.findOne({_id:req.query.idPartida},function(err,p){
+        if(p.j1 == req.session.passport.user){
+            if(p.j2 == null){
+                res.send("esperando oponente")
+            }else{
+                res.redirect('/play');
+            }
+        }else{
+            p.j2 = req.session.passport.user
+            Match.update({_id:req.query.idPartida},{ $set:{j1:p.j1,j2:p.j2,state:"en curso"}},function(err){
+                if(err){
+                    console.log('ERROR ACTUALIZANDO BD');
+                }else{
+                    var jugador1 = new Player(p.j1);
+                    var jugador2 = new Player(p.j2)
+                    g = new Game(p.name,jugador1,jugador2,p._id);
+                    g.newRound();
+                    g.currentRound.dealCards();
+                    res.redirect("/play");
+                }
+            });
+        }
+    });
+})
+
 router.get('/newRound',function(req,res) {
 
     g.newRound();
@@ -96,28 +144,14 @@ router.get('/newRound',function(req,res) {
     res.redirect("/play");
 })
 
-router.get('/play',function(req,res){
+router.get('/juegos',function(req,res){
+    Match.find({state:"esperando oponente"},function(err,matchs){
+        res.render('gameList',{j:matchs});
+    });
+});
 
-    if(g==undefined){
-        res.redirect('/');
-    }
-    if(g.player2.name==null){
-        if(req.session.passport.user!=g.player1.getName()){
-            g.player2.name = req.session.passport.user;
-        }
-    }
+router.get('/play',function(req,res){
     res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
-    // var juego = Game.findOne({_id:req.query.gId},function(err,game){
-    //     if (err){
-    //         console.log("ERROR: "+err);
-    //     }
-    //     console.log("Jugador 1: "+game.player1.getName());
-    //     console.log("Jugador 2: "+game.player2.getName());
-    //     console.log("CurrentHand: "+game.currentHand.getName()); 
-    //     console.log("CurrentRound: "+game.currentRound);   // CURRENTROUND ES UNDEFINED
-    //     console.log("ID del game: "+game._id);
-    //     res.render("play",{juego:game});
-    // })
 });
 
 router.post('/play',function(req,res){
@@ -145,6 +179,19 @@ router.post('/play',function(req,res){
     }
     if (estado=="Jugar Carta #3"){
         g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
+    }
+    if(g.score[0]>=15){
+        Match.update({name:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player1}},function(err){
+            if(err){
+                console.log("ERROR ACTUALIZANDO PARTIDA FINALIZADA")
+            }
+        });
+    }else if(g.score[1]>=15){
+        Match.update({name:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player2}},function(err){
+            if(err){
+                console.log("ERROR ACTUALIZANDO PARTIDA FINALIZADA")
+            }
+        });
     }
     res.redirect("/play")
 });
