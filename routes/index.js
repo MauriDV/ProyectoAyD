@@ -113,6 +113,7 @@ router.get('/play',function(req,res){
         }
     }
 
+    //SocketIO
     res.io.on('connection', function(socket){
       socket.on('chat message', function(msg){
         res.io.emit('chat message', msg);

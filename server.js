@@ -14,6 +14,7 @@ var port = 3000;
 
 var app = express();
 var server = require('http').Server(app);
+//SocketIO
 var io = require('socket.io')(server);
 
 server.listen(port,function(){
@@ -24,6 +25,7 @@ server.listen(port,function(){
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+//SocketIO
 app.use(function(req,res,next){
 	res.io = io;
 	next();
