@@ -1,12 +1,26 @@
 extends layout
 
 block content
-  if (!user)
-    a(href="/login") Login
-    a(href="/register") Register
-  if (user)
-    p You are currently logged in as #{user.username}
-    a(href="/logout") Logout
-    br
-    //opcion para crear una nueva partida
-    a(href="/createNewGame")     Create New Game :)
+	if (!user)
+		.container
+			h1(style='font-family: "Amatic SC", serif; font-size: 50px; text-align: center;') TRUCO
+			hr
+			h2 Hola...
+			a(href='/login')
+				button.btn.btn-default(type="button") Login
+			br
+			a(href='/register')
+				button.btn.btn-default(type="button") Register
+	if (user)
+		.container
+			h1(style='font-family: "Amatic SC", serif; font-size: 50px; text-align: center;') TRUCO
+			hr
+			h2 Hola, #{user.username}.
+			a(href='/createNewGame')
+				button.btn.btn-default(type="button") Create New Game :)
+			br
+			a(href="/juegos")
+				button.btn.btn-default(type="button") Lista de juegos
+			br
+			a(href="/logout")
+				button.btn.btn-default(type="button") Salir
