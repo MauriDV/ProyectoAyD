@@ -38,6 +38,7 @@ block content
             p #2   #{juego.player1.card2.show()}
           if juego.currentRound.currentTurn.card3 !== null
             p #3   #{juego.player1.card3.show()}
+          //puntos del envido jugado1
           p Puntos del envido: #{juego.player1.pointsCards}
           h2 Posibles jugadas
           form(role='form', action="/play",method="post")
@@ -72,6 +73,7 @@ block content
             p #2   #{juego.player2.card2.show()}
           if juego.currentRound.currentTurn.card3 !== null  
             p #3   #{juego.player2.card3.show()}
+          //puntos del envido jugador 2
           p Puntos del envido: #{juego.player2.pointsCards}
           h2 Posibles jugadas
           form(role='form', action="/play",method="post")
