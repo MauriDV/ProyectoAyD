@@ -29,6 +29,7 @@ PlayerSchema.methods.getName = function() {
 };
 
 //return the points of the cards to play envido
+//retorno los puntos de las cartas para jugar envido
 PlayerSchema.methods.getPointsCards = function() {
 	return this.pointsCards;
 };
