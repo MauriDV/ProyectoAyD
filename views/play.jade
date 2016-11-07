@@ -21,6 +21,7 @@ block content
         h1 SE TERMINO LA MANO
         a(href="/newRound") Proxima Ronda
       else
+        //lugar que va a representar la mesa (cartas jugadas)
         .mesa
           h1
             each i in juego.currentRound.cartasJugadas()
