@@ -29,6 +29,7 @@ block content
         // muestro las cartas que tiene disponible un jugador
         if juego.player2.name == null
           h1 Esperando oponente
+        //cartas jugador 1
         if juego.player1 == juego.currentRound.currentTurn && us == p1
           h1 Turno de: #{juego.player1.getName()}
           if juego.currentRound.currentTurn.card1 !== null
@@ -62,6 +63,7 @@ block content
                 else
                   input(type="submit", name="action", value="#{item}")
             &nbsp;
+        //cartas jugador 2
         if juego.player2 == juego.currentRound.currentTurn && us == p2
           h1 Turno de: #{juego.player2.getName()}
           if juego.currentRound.currentTurn.card1 !== null
