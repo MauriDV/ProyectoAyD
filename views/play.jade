@@ -23,6 +23,7 @@ block content
         h1 SE TERMINO LA MANO
         a(href="/newRound") Proxima Ronda
       else
+        //lugar que va a representar la mesa (cartas jugadas)
         .mesa
           h1
             each i in juego.currentRound.cartasJugadas()
@@ -30,14 +31,16 @@ block content
         // muestro las cartas que tiene disponible un jugador
         if juego.player2.name == null
           h1 Esperando oponente
-        if us == juego.player1.getName()
-          h1 Cartas disponibles
-          if juego.player1.card1 !== null
+        //cartas jugador 1
+        if juego.player1 == juego.currentRound.currentTurn && us == p1
+          h1 Turno de: #{juego.player1.getName()}
+          if juego.currentRound.currentTurn.card1 !== null
             p #1   #{juego.player1.card1.show()}
           if juego.player1.card2 !== null
             p #2   #{juego.player1.card2.show()}
           if juego.player1.card3 !== null
             p #3   #{juego.player1.card3.show()}
+          //puntos del envido jugado1
           p Puntos del envido: #{juego.player1.pointsCards}
         else
           h1 Cartas disponibles
@@ -73,8 +76,18 @@ block content
                 else
                   input(type="submit", name="action", value="#{item}")
             &nbsp;
+        //cartas jugador 2
         if juego.player2 == juego.currentRound.currentTurn && us == p2
-          h1 Tu turno, posibles jugadas
+          h1 Turno de: #{juego.player2.getName()}
+          if juego.currentRound.currentTurn.card1 !== null
+            p #1   #{juego.player2.card1.show()}
+          if juego.currentRound.currentTurn.card2 !== null
+            p #2   #{juego.player2.card2.show()}
+          if juego.currentRound.currentTurn.card3 !== null  
+            p #3   #{juego.player2.card3.show()}
+          //puntos del envido jugador 2
+          p Puntos del envido: #{juego.player2.pointsCards}
+          h2 Posibles jugadas
           form(role='form', action="/play",method="post")
             input(type="hidden", name="idPartida", value="#{juego._id}")
             // si envido es un estado posible, entonces se mostrara.
