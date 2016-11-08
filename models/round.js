@@ -169,25 +169,6 @@ Round.prototype.confrontCards = function(player,card1,card2){
 };
 
 Round.prototype.calculateScoreP = function(p1,p2) {
-  if((p1.aux < 2)&&(this.esTruco==true)){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
-    this.status="stop";
-    if(this.game.player1.name==p1.name){
-      this.game.score[0]+=2
-    }else{
-      this.game.score[1]+=2
-    }
-  }else if((p2.aux < 2)&&(this.esTruco==true)){
-    this.game.player1.aux=0;
-    this.game.player2.aux=0;
-    this.status="stop";
-    if(this.game.player1.name==p2.name){
-      this.game.score[0]+=2
-    }else{
-      this.game.score[1]+=2
-    }
-  }
   if(p1.aux==2){
     this.game.player1.aux=0;
     this.game.player2.aux=0;
