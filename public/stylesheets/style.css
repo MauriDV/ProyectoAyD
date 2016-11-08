@@ -1,8 +1,66 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: 'Poiret One', cursive;
+  background-color: #2692D3;
+}
+
+hr {
+  border: 0.5px solid white;
+}
+.container{
+	position: absolute;
+	left: 50%;
+	top: 25%;
+	width: 250px;
+	height: auto;
+	margin: -100px 0 0 -200px;
+}
+
+
+.form-control{
+	background: rgb(26, 89, 127);
+	border:none;
+	margin-bottom: 8px;
+	padding: 0 16px 0 16px;
+	border-radius: 4px;
+	height: 25px;
+}
+
+.btn-default{
+	cursor: pointer;
+	background: #6CB5E1;
+	border:none;
+	margin-bottom: 8px;
+	margin-right: 1px;
+	padding: 0 16px 0 16px;
+	border-radius: 4px;
+	height: 25px;
+}
+
+#cartasDisponibles li{
+	float: left;
 }
 
 a {
   color: #00B7FF;
+}
+
+.puntos{
+	position:absolute;
+	top:0;
+	right:0;
+	width:200px
+}
+
+.mesa{
+	position:absolute;
+	top:0;
+	left:auto;
+	width:200px;
+}
+
+.posiblesJugadas{
+	position: absolute;
+	top:215px;
+	left: auto;
 }

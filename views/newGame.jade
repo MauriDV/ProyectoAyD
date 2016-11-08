@@ -3,14 +3,14 @@ extends layout
 
 block content
   .container
-    h1 Creando nueva partida
-    br
+    h1(style='font-family: "Amatic SC", serif; font-size: 50px; text-align: center;') TRUCO
+    hr
+    h2 Crear partida nueva.
     form(role='form', action="/createNewGame",method="post", style='max-width: 300px;')
       .form-group
-          p Nombre de la partida
           input.form-control(type='text', name="nGame", placeholder='Nombre de la partida')
           br
       button.btn.btn-default(type='submit') Crear
       &nbsp;
       a(href='/')
-        button.btn.btn-primary(type="button") Cancelar
+        button.btn.btn-default(type="button") Cancelar

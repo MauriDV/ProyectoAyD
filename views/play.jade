@@ -3,14 +3,12 @@
 extends layout
 
 block content
-
-  h1
-      //informacion de la partida
-      p Puntos de #{juego.player1.getName()}: #{juego.score[0]}
-      p Puntos de #{juego.player2.getName()}: #{juego.score[1]}
-
-  .container
-    if juego.score[0] >= 15 
+  .container-play
+    .puntos
+      h1 Puntos
+      p #{juego.player1.getName()}: #{juego.score[0]}
+      p #{juego.player2.getName()}: #{juego.score[1]}
+    if juego.score[0] >= 15 || juego.score[1] >= 15
       h1 SE TERMINO LA PARTIDA
       p ganador: #{p1}
       a(href="/") Home
@@ -25,92 +23,109 @@ block content
       else
         //lugar que va a representar la mesa (cartas jugadas)
         .mesa
-          h1
+          h1 Mesa
+          table
             each i in juego.currentRound.cartasJugadas()
-              h3 #{i.show()}
+              td 
+                img(src="/img/cartas/#{i.show()}")
         // muestro las cartas que tiene disponible un jugador
         if juego.player2.name == null
           h1 Esperando oponente
-        //cartas jugador 1
-        if juego.player1 == juego.currentRound.currentTurn && us == p1
-          h1 Turno de: #{juego.player1.getName()}
-          if juego.currentRound.currentTurn.card1 !== null
-            p #1   #{juego.player1.card1.show()}
-          if juego.player1.card2 !== null
-            p #2   #{juego.player1.card2.show()}
-          if juego.player1.card3 !== null
-            p #3   #{juego.player1.card3.show()}
-          //puntos del envido jugado1
-          p Puntos del envido: #{juego.player1.pointsCards}
-        else
-          h1 Cartas disponibles
-          if juego.player2.card1 !== null
-            p #1   #{juego.player2.card1.show()}
-          if juego.player2.card2 !== null
-            p #2   #{juego.player2.card2.show()}
-          if juego.player2.card3 !== null
-            p #3   #{juego.player2.card3.show()}
-          p Puntos del envido: #{juego.player2.pointsCards}
-        if juego.player1 == juego.currentRound.currentTurn && us == p1
-          h1 Tu turno, posibles jugadas
-          form(role='form', action="/play",method="post")
-            input(type="hidden", name="idPartida", value="#{juego._id}")
-            // si envido es un estado posible, entonces se mostrara.
-            // si quiero es un estado posible, entonces se mostrara.
-            // si no-quiero es un estado posible, entonces se mostrara.
-            // si truco es un estado posible, entonces se mostrara.
-            // si EnvidoEnvido es un estado posible, entonces se mostrara.
-            #{a = juego.currentRound.posiblesStates()}
-            each item in a
-              if item == "playCard"
+        .posiblesJugadas
+          h1 Posbiles Jugadas
+          if juego.player1 == juego.currentRound.currentTurn && us == p1
+            table
+              tr(style="text-align:center;")
                 if juego.currentRound.currentTurn.card1 !== null
-                  input#carta1(type="submit", name="action", value="Jugar Carta #1")
+                  td
+                    p #1 
                 if juego.currentRound.currentTurn.card2 !== null
-                  input#carta2(type="submit", name="action", value="Jugar Carta #2")
+                  td
+                    p #2
                 if juego.currentRound.currentTurn.card3 !== null
-                  input#carta3(type="submit", name="action", value="Jugar Carta #3")
-              else
-                if item == "truco"
-                  if juego.currentRound.esTruco !== true
-                    input#truco(type="submit", name="action", value="#{item}")
-                else
-                  input#jugada(type="submit", name="action", value="#{item}")
-            &nbsp;
-        //cartas jugador 2
-        if juego.player2 == juego.currentRound.currentTurn && us == p2
-          h1 Turno de: #{juego.player2.getName()}
-          if juego.currentRound.currentTurn.card1 !== null
-            p #1   #{juego.player2.card1.show()}
-          if juego.currentRound.currentTurn.card2 !== null
-            p #2   #{juego.player2.card2.show()}
-          if juego.currentRound.currentTurn.card3 !== null  
-            p #3   #{juego.player2.card3.show()}
-          //puntos del envido jugador 2
-          p Puntos del envido: #{juego.player2.pointsCards}
-          h2 Posibles jugadas
-          form(role='form', action="/play",method="post")
-            input(type="hidden", name="idPartida", value="#{juego._id}")
-            // si envido es un estado posible, entonces se mostrara.
-            // si quiero es un estado posible, entonces se mostrara.
-            // si no-quiero es un estado posible, entonces se mostrara.
-            // si truco es un estado posible, entonces se mostrara.
-            // si EnvidoEnvido es un estado posible, entonces se mostrara.
-            #{a = juego.currentRound.posiblesStates()}
-            each item in a
-              if item == "playCard"
+                  td
+                    p #3 
+              tr
                 if juego.currentRound.currentTurn.card1 !== null
-                  input#carta1(type="submit", name="action", value="Jugar Carta #1")
+                  td
+                      img(src="/img/cartas/#{juego.player1.card1.show()}")
                 if juego.currentRound.currentTurn.card2 !== null
-                  input#carta2(type="submit", name="action", value="Jugar Carta #2")
+                  td
+                      img(src="/img/cartas/#{juego.player1.card2.show()}")
                 if juego.currentRound.currentTurn.card3 !== null
-                  input#carta3(type="submit", name="action", value="Jugar Carta #3")
-              else
-                if item == "truco"
-                  if juego.currentRound.esTruco !== true
-                    input#truco(type="submit", name="action", value="#{item}")
+                  td   
+                      img(src="/img/cartas/#{juego.player1.card3.show()}")
+            br
+            p Puntos del envido: #{juego.player1.pointsCards}
+            form(role='form', action="/play",method="post")
+              input(type="hidden", name="idPartida", value="#{juego._id}")
+              // si envido es un estado posible, entonces se mostrara.
+              // si quiero es un estado posible, entonces se mostrara.
+              // si no-quiero es un estado posible, entonces se mostrara.
+              // si truco es un estado posible, entonces se mostrara.
+              // si EnvidoEnvido es un estado posible, entonces se mostrara.
+              #{a = juego.currentRound.posiblesStates()}
+              each item in a
+                if item == "playCard"
+                  if juego.currentRound.currentTurn.card1 !== null
+                    input(type="submit", name="action", value="Jugar Carta #1")
+                  if juego.currentRound.currentTurn.card2 !== null
+                    input(type="submit", name="action", value="Jugar Carta #2")
+                  if juego.currentRound.currentTurn.card3 !== null
+                    input(type="submit", name="action", value="Jugar Carta #3")
                 else
-                  input#jugada(type="submit", name="action", value="#{item}")
-            &nbsp;
+                  if item == "truco"
+                    if juego.currentRound.esTruco !== true
+                      input(type="submit", name="action", value="#{item}")
+                  else
+                    input(type="submit", name="action", value="#{item}")
+              &nbsp;
+          if juego.player2 == juego.currentRound.currentTurn && us == p2
+            table
+              tr(style="text-align:center;")
+                if juego.currentRound.currentTurn.card1 !== null
+                  td
+                    p #1 
+                if juego.currentRound.currentTurn.card2 !== null
+                  td
+                    p #2
+                if juego.currentRound.currentTurn.card3 !== null
+                  td
+                    p #3   
+              tr
+                if juego.currentRound.currentTurn.card1 !== null
+                  td
+                      img(src="/img/cartas/#{juego.player2.card1.show()}")
+                if juego.currentRound.currentTurn.card2 !== null
+                  td
+                      img(src="/img/cartas/#{juego.player2.card2.show()}")
+                if juego.currentRound.currentTurn.card3 !== null
+                  td
+                      img(src="/img/cartas/#{juego.player2.card3.show()}")
+            p Puntos del envido: #{juego.player2.pointsCards}
+            form(role='form', action="/play",method="post")
+              input(type="hidden", name="idPartida", value="#{juego._id}")
+              // si envido es un estado posible, entonces se mostrara.
+              // si quiero es un estado posible, entonces se mostrara.
+              // si no-quiero es un estado posible, entonces se mostrara.
+              // si truco es un estado posible, entonces se mostrara.
+              // si EnvidoEnvido es un estado posible, entonces se mostrara.
+              #{a = juego.currentRound.posiblesStates()}
+              each item in a
+                if item == "playCard"
+                  if juego.currentRound.currentTurn.card1 !== null
+                    input.btn.btn-default(type="submit", name="action", value="Jugar Carta #1")
+                  if juego.currentRound.currentTurn.card2 !== null
+                    input.btn.btn-default(type="submit", name="action", value="Jugar Carta #2")
+                  if juego.currentRound.currentTurn.card3 !== null
+                    input.btn.btn-default(type="submit", name="action", value="Jugar Carta #3")
+                else
+                  if item == "truco"
+                    if juego.currentRound.esTruco !== true
+                      input.btn.btn-default(type="submit", name="action", value="#{item}")
+                  else
+                    input.btn.btn-default(type="submit", name="action", value="#{item}")
+              &nbsp;
   script(src='https://cdn.socket.io/socket.io-1.4.5.js')
   script(src='http://code.jquery.com/jquery-1.11.1.js')
   script.
