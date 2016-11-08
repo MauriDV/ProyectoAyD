@@ -5,7 +5,7 @@
   "main": "engine.js",
   "scripts": {
     "test": "mocha",
-    "start": "NODE_ENV=development node ./bin/www"
+    "start": "NODE_ENV=development node server.js"
   },
   "author": "me",
   "license": "MIT",

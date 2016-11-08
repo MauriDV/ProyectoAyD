@@ -14,15 +14,17 @@ var PlayerSchema = playerModel.playerSchema
 
 var GameSchema = new Schema({
   name:         String,
-  player1:      PlayerSchema,
-  player2:      PlayerSchema,
-  currentHand:  PlayerSchema,
+  player1:      Object,
+  player2:      Object,
+  currentHand:  Object,
   currentRound: Object,
   rounds:       { type : Array , default : [] },
   score:        { type : Array , default : [0, 0] },
 });
 
-function Game(player1, player2){
+function Game(n,player1, player2,identificador){
+  this.identificador = identificador;
+  this.name = n;
   this.player1 = player1;
   this.player2 = player2;
   this.rounds = [];
