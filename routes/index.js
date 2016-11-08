@@ -5,8 +5,9 @@ var mongoose = require('mongoose');
 var Player = require('../models/player').player
 var Deck = require('../models/deck').deck
 var Card = require('../models/card').card
-var Round = require('../models/card').round
+var Round = require('../models/round').round
 var router = express.Router();
+
 
 var Game = require("../models/game").game;
 
@@ -26,6 +27,10 @@ var Match = mongoose.model('Match', matchSchema);
 /* GET home page. */
 router.get('/', function (req, res) {
   res.render('index', { user : req.user});
+});
+
+router.get('/testrealtime', function(req,res){
+    res.render('testRealTime');
 });
 
 //REGISTER
@@ -151,6 +156,23 @@ router.get('/juegos',function(req,res){
 });
 
 router.get('/play',function(req,res){
+
+    if(g==undefined){
+        res.redirect('/');
+    }
+    if(g.player2.name==null){
+        if(req.session.passport.user!=g.player1.getName()){
+            g.player2.name = req.session.passport.user;
+        }
+    }
+
+    //SocketIO
+    res.io.on('connection', function(socket){
+      socket.on('chat message', function(msg){
+        res.io.emit('chat message', msg);
+      });
+    });
+
     res.render("play",{juego:g,us:req.session.passport.user,p1:g.player1.getName(),p2:g.player2.getName()});
 });
 

@@ -64,17 +64,17 @@ block content
             each item in a
               if item == "playCard"
                 if juego.currentRound.currentTurn.card1 !== null
-                  input(type="submit", name="action", value="Jugar Carta #1")
+                  input#carta1(type="submit", name="action", value="Jugar Carta #1")
                 if juego.currentRound.currentTurn.card2 !== null
-                  input(type="submit", name="action", value="Jugar Carta #2")
+                  input#carta2(type="submit", name="action", value="Jugar Carta #2")
                 if juego.currentRound.currentTurn.card3 !== null
-                  input(type="submit", name="action", value="Jugar Carta #3")
+                  input#carta3(type="submit", name="action", value="Jugar Carta #3")
               else
                 if item == "truco"
                   if juego.currentRound.esTruco !== true
-                    input(type="submit", name="action", value="#{item}")
+                    input#truco(type="submit", name="action", value="#{item}")
                 else
-                  input(type="submit", name="action", value="#{item}")
+                  input#jugada(type="submit", name="action", value="#{item}")
             &nbsp;
         //cartas jugador 2
         if juego.player2 == juego.currentRound.currentTurn && us == p2
@@ -99,15 +99,42 @@ block content
             each item in a
               if item == "playCard"
                 if juego.currentRound.currentTurn.card1 !== null
-                  input(type="submit", name="action", value="Jugar Carta #1")
+                  input#carta1(type="submit", name="action", value="Jugar Carta #1")
                 if juego.currentRound.currentTurn.card2 !== null
-                  input(type="submit", name="action", value="Jugar Carta #2")
+                  input#carta2(type="submit", name="action", value="Jugar Carta #2")
                 if juego.currentRound.currentTurn.card3 !== null
-                  input(type="submit", name="action", value="Jugar Carta #3")
+                  input#carta3(type="submit", name="action", value="Jugar Carta #3")
               else
                 if item == "truco"
                   if juego.currentRound.esTruco !== true
-                    input(type="submit", name="action", value="#{item}")
+                    input#truco(type="submit", name="action", value="#{item}")
                 else
-                  input(type="submit", name="action", value="#{item}")
+                  input#jugada(type="submit", name="action", value="#{item}")
             &nbsp;
+  script(src='https://cdn.socket.io/socket.io-1.4.5.js')
+  script(src='http://code.jquery.com/jquery-1.11.1.js')
+  script.
+    var socket = io();
+    $('#carta1').click(function(){
+      socket.emit('chat message', $("#carta1").val());
+    });
+
+    $('#carta2').click(function(){
+      socket.emit('chat message', $("#carta2").val());
+    });
+
+    $('#carta3').click(function(){
+      socket.emit('chat message', $("#carta3").val());
+    });
+
+    $('#truco').click(function(){
+      socket.emit('chat message', $("#truco").val());
+    });
+
+    $('#jugada').click(function(){
+      socket.emit('chat message', $("#jugada").val());
+    });
+
+    socket.on('chat message', function(msg){
+      location.reload();
+    });
