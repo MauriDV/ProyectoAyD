@@ -190,7 +190,16 @@ router.post('/play',function(req,res){
     if (estado=='noQuiero'){
         g.play(g.currentRound.currentTurn,estado);
     }
+    if (estado=='quieroTruco'){
+        g.play(g.currentRound.currentTurn,estado);
+    }
+    if (estado=='noQuieroTruco'){
+        g.play(g.currentRound.currentTurn,estado);
+    }
     if (estado=='truco'){
+        g.play(g.currentRound.currentTurn,estado)
+    }
+    if (estado=='reTruco'){
         g.play(g.currentRound.currentTurn,estado)
     }
     if (estado=="Jugar Carta #1"){
@@ -215,6 +224,8 @@ router.post('/play',function(req,res){
             }
         });
     }
+    console.log(g.currentRound.esTruco);
+    console.log(g.currentRound.esTruco);
     res.redirect("/play")
 });
 
