@@ -64,6 +64,7 @@ block content
               // si no-quiero es un estado posible, entonces se mostrara.
               // si truco es un estado posible, entonces se mostrara.
               // si EnvidoEnvido es un estado posible, entonces se mostrara.
+              // si reTruco es un estado posible, entonces se mostrara
               #{a = juego.currentRound.posiblesStates()}
               each item in a
                 if item == "playCard"
@@ -78,7 +79,11 @@ block content
                     if juego.currentRound.esTruco !== true
                       input#truco.btn.btn-default(type="submit", name="action", value="#{item}")
                   else
-                    input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+                    if item == "reTruco"
+                      if juego.currentRound.esReTruco !== true
+                        input#retruco.btn.btn-default(type="submit", name="action", value="#{item}")  
+                    else
+                      input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
               &nbsp;
           if juego.player2 == juego.currentRound.currentTurn && us == p2
             table
@@ -110,6 +115,7 @@ block content
               // si no-quiero es un estado posible, entonces se mostrara.
               // si truco es un estado posible, entonces se mostrara.
               // si EnvidoEnvido es un estado posible, entonces se mostrara.
+              // si reTruco es un estado posible, entonces se mostrara.
               #{a = juego.currentRound.posiblesStates()}
               each item in a
                 if item == "playCard"
@@ -124,7 +130,11 @@ block content
                     if juego.currentRound.esTruco !== true
                       input#truco.btn.btn-default(type="submit", name="action", value="#{item}")
                   else
-                    input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+                    if item == "reTruco"
+                      if juego.currentRound.esReTruco !== true
+                        input#retruco.btn.btn-default(type="submit", name="action", value="#{item}")  
+                    else
+                      input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
               &nbsp;
   script(src='https://cdn.socket.io/socket.io-1.4.5.js')
   script(src='http://code.jquery.com/jquery-1.11.1.js')
@@ -145,6 +155,11 @@ block content
     $('#truco').click(function(){
       socket.emit('chat message', $("#truco").val());
     });
+
+    $('#retruco').click(function(){
+      socket.emit('chat message', $("#retruco").val());
+    });
+
 
     $('#jugada').click(function(){
       socket.emit('chat message', $("#jugada").val());

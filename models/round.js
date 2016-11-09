@@ -30,20 +30,32 @@ function newTrucoFSM(){
       { name: 'truco',     from: ['init', 'playedcard','primercarta'
                                   ,'quiero','noQuiero'],          to: 'truco'  },
       { name: 'playCard', from: ['quiero', 'noQuiero',
-                                  'primercarta', 'playedcard'],  to: 'playedcard' },
-      { name: 'quiero',    from: ['envidox2','envido', 'truco'],              to: 'quiero'  },
-      { name: 'noQuiero', from: ['envidox2','envido', 'truco'],              to: 'noQuiero' },
-    ],
+                                  'primercarta', 'playedcard','quieroTruco'],  to: 'playedcard' },
+      { name: 'quiero',    from: ['envidox2','envido'],              to: 'quiero'  },
+      { name: 'noQuiero', from: ['envidox2','envido'], to: 'noQuiero' },
+	  { name: 'reTruco' , from: 'truco' , to: 'reTruco' },
+	  { name: 'quieroTruco' , from: ['truco','reTruco'], to: 'quieroTruco'},
+	  { name: 'noQuieroTruco' , from: ['truco','reTruco'], to: 'noQuieroTruco'},
+
+	],
 
     callbacks: {
       onchangestate: function(event, from, to) {
         if ((from=="envido")&&(to=="envidox2")){
           e=to
-        }else if (to=="truco"){
-          e=to;
-        }
-      }
-    }
+        }else{ 
+        	if (to=="truco"){
+          		e=to;
+        	}else{
+        		if (to=="reTruco"){
+        			e=to;
+        		}
+        	}
+        }		
+ 	  }
+ 	
+
+ 	}
 
   });
 
@@ -59,6 +71,7 @@ function Round(game, turn){
   this.status = 'running';
   this.score = [0, 0];
   this.esTruco = false;
+  this.esReTruco = false;
   this.playedCards = [];
 
 }
@@ -96,44 +109,59 @@ Round.prototype.switchPlayer = function(player) {
  */
 Round.prototype.calculateScoreE = function(player,action){
   a = this.switchPlayer(player);
-  if(action == "quiero"){
-    if ( e== "truco"){
-      this.esTruco=true;
-    }else {
-      if(player.getPointsCards()>a.getPointsCards()){
+  if (action == "quieroTruco"){
+  	if ( e== "truco"){
+      	this.esTruco=true;
+    }else{
+      	if ( e== "reTruco"){
+      		this.esTruco=true;
+      		this.esReTruco=true;
+      		this.changeTurn();
+      	}
+    }
+    this.fsm.quieroTruco();
+  }else if(action == "noQuieroTruco"){
+  	if (e=="truco"){
+      	this.score=[0,1];
+      	this.status="stop"
+      	this.fsm.noQuieroTruco();
+    }else{
+    	if (e=="reTruco"){
+      		this.score=[0,2];
+      		this.status="stop";
+      		this.changeTurn();
+      		this.fsm.noQuieroTruco();
+      	}
+    }
+  }else if(action == "quiero"){
+  	if(player.getPointsCards()>a.getPointsCards()){
         if (e=="envidox2") {
-          this.score=[0,4];
-          this.changeTurn()
+          	this.score=[0,4];
+          	this.changeTurn()
         }else{
-          this.score=[0,2];
+          	this.score=[0,2];
         }
-      }else{
+    }else{
         if (e=="envidox2") {
-          this.score=[4,0];
-          this.changeTurn()
+          	this.score=[4,0];
+          	this.changeTurn()
         }else{
-          this.score=[2,0]
+          	this.score=[2,0]
         }
-      }
     }
     this.fsm.quiero();
-  }else if(action == "noQuiero"){ 
-    if (e=="truco"){
-      this.score=[0,1];
-      this.status="stop"
-      this.fsm.noQuiero();
-    }else{
-      if (e=="envidox2") {
+  }else if(action == "noQuiero"){
+  	if (e=="envidox2") {
         this.score = [0,2]
         this.changeTurn()
-      } else{
+    }else{
         this.score = [0,1];
-      };
-      this.fsm.noQuiero();
-    }
-  }
+    };
+    this.fsm.noQuiero();
+}
+	
   if (player.getName()==this.game.player1.getName()) {
-    if(action=='quiero'){
+    if((action=='quiero')||(action=='quieroTruco')){
       var aux1 = this.score[1];
       var aux0 = this.score[0]
       this.score[0]=aux1;
@@ -142,7 +170,7 @@ Round.prototype.calculateScoreE = function(player,action){
       this.score=this.score;
     }
   }else{
-    if(action=='noQuiero'){
+    if((action=='noQuiero')||(action=='noQuieroTruco')){
       var aux1 = this.score[1];
       var aux0 = this.score[0]
       this.score[0]=aux1;
@@ -174,18 +202,30 @@ Round.prototype.calculateScoreP = function(p1,p2) {
     this.game.player2.aux=0;
     this.status="stop";
     if(this.game.player1.name==p1.name){
-      if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
-    }else{
-      if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
-    }
+      if(this.esReTruco==true){this.game.score[0]+=3
+      }else{
+		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  }
+	}else{
+      if(this.esReTruco==true){this.game.score[1]+=2
+      }else{
+		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  }
+	}
   }else if(p2.aux==2){
     this.game.player1.aux=0;
     this.game.player2.aux=0;
     this.status="stop";
     if(this.game.player1.name==p2.name){
-      if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+      if(this.esReTruco==true){this.game.score[0]+=3
+      }else{
+		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  }
     }else{
-      if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
+      if(this.esReTruco==true){this.game.score[1]+=3
+      }else{
+		if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
+	  }
     }
   }  
 };
@@ -216,10 +256,15 @@ Round.prototype.play = function(player, action, value) {
     this.fsm.truco();
   }
 
+  if (action=="reTruco"){
+    this.fsm.reTruco();
+  }
+
   // if action is quiero or no quiero move to quiero state or noQuiero state 
-  if (action=="quiero"||action=="noQuiero"){
+  if (action=="quiero"||action=="noQuiero"||action=="quieroTruco"||action=="noQuieroTruco"){
     this.calculateScoreE(player,action);
   }
+  console.log(this.fsm.posiblesStates);	
 
   if ((action=="playCard")&&(this.status=="running")){
     this.playedCards.push(value);
