@@ -110,9 +110,7 @@ Round.prototype.switchPlayer = function(player) {
 Round.prototype.calculateScoreE = function(player,action){
   a = this.switchPlayer(player);
   if (action == "quieroTruco"){
-  	console.log(e)
   	if ( e== "truco"){
-  		console.log("eeeeeeee")
       	this.esTruco=true;
     }else{
       	if ( e== "reTruco"){
@@ -126,16 +124,15 @@ Round.prototype.calculateScoreE = function(player,action){
   	if (e=="truco"){
       	this.score=[0,1];
       	this.status="stop"
-      	this.fsm.noQuiero();
+      	this.fsm.noQuieroTruco();
     }else{
     	if (e=="reTruco"){
       		this.score=[0,2];
       		this.status="stop";
       		this.changeTurn();
-      		this.fsm.noQuiero();
+      		this.fsm.noQuieroTruco();
       	}
     }
-    this.fsm.noQuieroTruco();
   }else if(action == "quiero"){
   	if(player.getPointsCards()>a.getPointsCards()){
         if (e=="envidox2") {
