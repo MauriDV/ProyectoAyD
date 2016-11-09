@@ -159,58 +159,7 @@ Round.prototype.calculateScoreE = function(player,action){
     };
     this.fsm.noQuiero();
 }
-
-
-    /*if(action == "quiero"){
-    	if ( e== "truco"){
-      		this.esTruco=true;
-    	}else{
-      		if ( e== "reTruco"){
-      			this.esReTruco=true;
-      			this.changeTurn();
-      		}else{
-  				if(player.getPointsCards()>a.getPointsCards()){
-        			if (e=="envidox2") {
-          				this.score=[0,4];
-          				this.changeTurn()
-        			}else{
-          				this.score=[0,2];
-        			}
-      			}else{
-        			if (e=="envidox2") {
-          				this.score=[4,0];
-          				this.changeTurn()
-        			}else{
-          				this.score=[2,0]
-        			}
-      			}
-    		}
-   	  	}	   	  	
-    	this.fsm.quiero();
-  	}else if(action == "noQuiero"){ 
-    	if (e=="truco"){
-      		this.score=[0,1];
-      		this.status="stop"
-      		this.fsm.noQuiero();
-    	}else{
-    		if (e=="reTruco"){
-      			this.score=[0,2];
-      			this.status="stop";
-      			this.changeTurn();
-      			this.fsm.noQuiero();
-      			
-    		}else{
-      			if (e=="envidox2") {
-        			this.score = [0,2]
-        			this.changeTurn()
-      			}else{
-        			this.score = [0,1];
-      			};
-      		}
-      	}	
-      	this.fsm.noQuiero();
-    }*/
-  	
+	
   if (player.getName()==this.game.player1.getName()) {
     if((action=='quiero')||(action=='quieroTruco')){
       var aux1 = this.score[1];
