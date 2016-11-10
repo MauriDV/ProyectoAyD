@@ -34,8 +34,9 @@ function newTrucoFSM(){
       { name: 'quiero',    from: ['envidox2','envido'],              to: 'quiero'  },
       { name: 'noQuiero', from: ['envidox2','envido'], to: 'noQuiero' },
 	  { name: 'reTruco' , from: 'truco' , to: 'reTruco' },
-	  { name: 'quieroTruco' , from: ['truco','reTruco'], to: 'quieroTruco'},
-	  { name: 'noQuieroTruco' , from: ['truco','reTruco'], to: 'noQuieroTruco'},
+	  { name: 'quieroTruco' , from: ['truco','reTruco','valeCuatro'], to: 'quieroTruco'},
+	  { name: 'noQuieroTruco' , from: ['truco','reTruco','valeCuatro'], to: 'noQuieroTruco'},
+	  { name: 'valeCuatro' , from: 'reTruco' , to: 'valeCuatro'},
 
 	],
 
@@ -49,6 +50,10 @@ function newTrucoFSM(){
         	}else{
         		if (to=="reTruco"){
         			e=to;
+        		}else{
+        			if (to=="valeCuatro"){
+        				e=to;
+        			}
         		}
         	}
         }		
@@ -72,6 +77,7 @@ function Round(game, turn){
   this.score = [0, 0];
   this.esTruco = false;
   this.esReTruco = false;
+  this.esValeCuatro = false;
   this.playedCards = [];
 
 }
@@ -117,6 +123,14 @@ Round.prototype.calculateScoreE = function(player,action){
       		this.esTruco=true;
       		this.esReTruco=true;
       		this.changeTurn();
+      	}else{
+      		if (e=="valeCuatro"){
+      			this.esTruco=true;
+      			this.esReTruco=true;
+      			this.esValeCuatro=true;
+      			//this.changeTurn();
+
+      		}
       	}
     }
     this.fsm.quieroTruco();
@@ -131,6 +145,13 @@ Round.prototype.calculateScoreE = function(player,action){
       		this.status="stop";
       		this.changeTurn();
       		this.fsm.noQuieroTruco();
+      	}else{
+      		if (e=="valeCuatro"){
+      			this.score=[0,3];
+      			this.status="stop";
+      			this.changeTurn();
+      			this.fsm.noQuieroTruco();
+			}
       	}
     }
   }else if(action == "quiero"){
@@ -202,14 +223,20 @@ Round.prototype.calculateScoreP = function(p1,p2) {
     this.game.player2.aux=0;
     this.status="stop";
     if(this.game.player1.name==p1.name){
-      if(this.esReTruco==true){this.game.score[0]+=3
+      if(this.esValeCuatro==true){this.game.score[0]+=4
       }else{
-		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+      	if(this.esReTruco==true){this.game.score[0]+=3
+      	}else{
+			if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  	}
 	  }
 	}else{
-      if(this.esReTruco==true){this.game.score[1]+=2
+      if(this.esValeCuatro==true){this.game.score[0]+=4
       }else{
-		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+      	if(this.esReTruco==true){this.game.score[1]+=2
+      	}else{
+			if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  	}
 	  }
 	}
   }else if(p2.aux==2){
@@ -217,22 +244,28 @@ Round.prototype.calculateScoreP = function(p1,p2) {
     this.game.player2.aux=0;
     this.status="stop";
     if(this.game.player1.name==p2.name){
-      if(this.esReTruco==true){this.game.score[0]+=3
+      if(this.esValeCuatro==true){this.game.score[0]+=4
       }else{
-		if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+      	if(this.esReTruco==true){this.game.score[0]+=3
+      	}else{
+			if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+	  	}
 	  }
     }else{
-      if(this.esReTruco==true){this.game.score[1]+=3
+      if(this.esValeCuatro==true){this.game.score[0]+=4
       }else{
-		if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
-	  }
+      	if(this.esReTruco==true){this.game.score[1]+=3
+      	}else{
+			if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
+	  	}
+      }
     }
   }  
 };
 
 /*
  * Let's Play :)
- */
+ */  
 
 count = 0;
 Round.prototype.play = function(player, action, value) {
@@ -258,6 +291,10 @@ Round.prototype.play = function(player, action, value) {
 
   if (action=="reTruco"){
     this.fsm.reTruco();
+  }
+
+  if (action=="valeCuatro"){
+    this.fsm.valeCuatro();
   }
 
   // if action is quiero or no quiero move to quiero state or noQuiero state 

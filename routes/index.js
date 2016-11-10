@@ -202,6 +202,9 @@ router.post('/play',function(req,res){
     if (estado=='reTruco'){
         g.play(g.currentRound.currentTurn,estado)
     }
+    if (estado=='valeCuatro'){
+        g.play(g.currentRound.currentTurn,estado)
+    }
     if (estado=="Jugar Carta #1"){
         g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card1)
     }
