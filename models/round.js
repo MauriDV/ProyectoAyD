@@ -264,7 +264,7 @@ Round.prototype.calculateScoreP = function(p1,p2) {
 };
 
 /*
- * Let's Play :)
+ * Let's Play 
  */  
 
 count = 0;
