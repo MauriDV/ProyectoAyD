@@ -231,11 +231,11 @@ Round.prototype.calculateScoreP = function(p1,p2) {
 	  	}
 	  }
 	}else{
-      if(this.esValeCuatro==true){this.game.score[0]+=4
+      if(this.esValeCuatro==true){this.game.score[1]+=4
       }else{
       	if(this.esReTruco==true){this.game.score[1]+=2
       	}else{
-			if(this.esTruco==true){this.game.score[0]+=2}else{this.game.score[0]+=1}
+			if(this.esTruco==true){this.game.score[1]+=2}else{this.game.score[1]+=1}
 	  	}
 	  }
 	}
@@ -252,7 +252,7 @@ Round.prototype.calculateScoreP = function(p1,p2) {
 	  	}
 	  }
     }else{
-      if(this.esValeCuatro==true){this.game.score[0]+=4
+      if(this.esValeCuatro==true){this.game.score[1]+=4
       }else{
       	if(this.esReTruco==true){this.game.score[1]+=3
       	}else{
