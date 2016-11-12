@@ -190,6 +190,14 @@ router.get('/play',function(req,res){
 
 router.post('/play',function(req,res){
     var estado=req.body.action;
+
+    console.log(estado);
+
+    if (estado=='Proxima ronda'){
+        g.newRound();
+        g.currentRound.dealCards();
+        res.redirect("/play");
+    }
     if (estado=='envido'){
         g.play(g.currentRound.currentTurn,estado);
     }

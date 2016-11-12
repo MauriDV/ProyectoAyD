@@ -8,55 +8,69 @@ block content
       h1 Puntos
       p #{juego.player1.getName()}: #{juego.score[0]}
       p #{juego.player2.getName()}: #{juego.score[1]}
-    if juego.score[0] >= 15 || juego.score[1] >= 15
-      h1 SE TERMINO LA PARTIDA
-      p ganador: #{p1}
-      a(href="/") Home
-    else if juego.score[1] >= 15
-      h1 SE TERMINO LA PARTIDA
-      p ganador: #{p2}
-      a(href="/") Home
-    else
-      if juego.currentRound.status == "stop"
-        h1 SE TERMINO LA MANO
-        a(href="/newRound") Proxima Ronda
+      h1 Jugada:
+      if juego.currentRound.fsm.current == "init"
+        p ultima jugada: -
+      else if juego.currentRound.fsm.current == "primercarta" || juego.currentRound.fsm.current == "playedcard"
+        p ultima jugada: se jugo una carta
       else
-        //lugar que va a representar la mesa (cartas jugadas)
-        .mesa
-          h1 Mesa
-          table
-            each i in juego.currentRound.cartasJugadas()
-              td 
-                img(src="/img/cartas/#{i.show()}")
-        // muestro las cartas que tiene disponible un jugador
-        if juego.player2.name == null
-          h1 Esperando oponente
-        .posiblesJugadas
-          h1 Posbiles Jugadas
-          if juego.player1 == juego.currentRound.currentTurn && us == p1
+        p ultima jugada: #{juego.currentRound.fsm.current}
+    //lugar que va a representar la mesa (cartas jugadas)
+    .mesa
+      h1 Mesa 
+      table
+        each i in juego.currentRound.cartasJugadas()
+          td 
+            img(src="/img/cartas/#{i.show()}")
+    // muestro las cartas que tiene disponible un jugador
+    if juego.player2.name == null
+      h1 Esperando oponente
+    .posiblesJugadas
+      if juego.score[0] >= 15
+        h1 SE TERMINO LA PARTIDA
+        p ganador: #{p1}
+        a(href='/')
+          button.btn.btn-default(type="button") Home
+      else if juego.score[1] >= 15
+        h1 SE TERMINO LA PARTIDA
+        p ganador: #{p2}
+        a(href='/')
+          button.btn.btn-default(type="button") Home
+      else
+        if juego.currentRound.status == "stop"
+          h1 SE TERMINO LA MANO
+          form(role='form', action="/play",method="post")
+            input(type="hidden", name="idPartida", value="#{juego._id}")
+            input#proxRound.btn.btn-default(type="submit", name="action", value="Proxima ronda")
+        else
+          h1 Tus cartas:
+          if us == p1
             table
               tr(style="text-align:center;")
-                if juego.currentRound.currentTurn.card1 !== null
+                if juego.player1.card1 !== null
                   td
                     p #1 
-                if juego.currentRound.currentTurn.card2 !== null
+                if juego.player1.card2 !== null
                   td
                     p #2
-                if juego.currentRound.currentTurn.card3 !== null
+                if juego.player1.card3 !== null
                   td
                     p #3 
               tr
-                if juego.currentRound.currentTurn.card1 !== null
+                if juego.player1.card1 !== null
                   td
                       img(src="/img/cartas/#{juego.player1.card1.show()}")
-                if juego.currentRound.currentTurn.card2 !== null
+                if juego.player1.card2 !== null
                   td
                       img(src="/img/cartas/#{juego.player1.card2.show()}")
-                if juego.currentRound.currentTurn.card3 !== null
+                if juego.player1.card3 !== null
                   td   
                       img(src="/img/cartas/#{juego.player1.card3.show()}")
             br
             p Puntos del envido: #{juego.player1.pointsCards}
+
+          if juego.player1 == juego.currentRound.currentTurn && us == p1
+            h1 Posibles jugadas:
             form(role='form', action="/play",method="post")
               input(type="hidden", name="idPartida", value="#{juego._id}")
               // si envido es un estado posible, entonces se mostrara.
@@ -89,29 +103,32 @@ block content
                       else
                         input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
               &nbsp;
-          if juego.player2 == juego.currentRound.currentTurn && us == p2
+          if us == p2
             table
               tr(style="text-align:center;")
-                if juego.currentRound.currentTurn.card1 !== null
+                if juego.player2.card1 !== null
                   td
                     p #1 
-                if juego.currentRound.currentTurn.card2 !== null
+                if juego.player2.card2 !== null
                   td
                     p #2
-                if juego.currentRound.currentTurn.card3 !== null
+                if juego.player2.card3 !== null
                   td
                     p #3   
               tr
-                if juego.currentRound.currentTurn.card1 !== null
+                if juego.player2.card1 !== null
                   td
                       img(src="/img/cartas/#{juego.player2.card1.show()}")
-                if juego.currentRound.currentTurn.card2 !== null
+                if juego.player2.card2 !== null
                   td
                       img(src="/img/cartas/#{juego.player2.card2.show()}")
-                if juego.currentRound.currentTurn.card3 !== null
+                if juego.player2.card3 !== null
                   td
                       img(src="/img/cartas/#{juego.player2.card3.show()}")
+            br
             p Puntos del envido: #{juego.player2.pointsCards}
+          if juego.player2 == juego.currentRound.currentTurn && us == p2
+            h1 Posibles jugadas:
             form(role='form', action="/play",method="post")
               input(type="hidden", name="idPartida", value="#{juego._id}")
               // si envido es un estado posible, entonces se mostrara.
@@ -147,6 +164,7 @@ block content
   script(src='https://cdn.socket.io/socket.io-1.4.5.js')
   script(src='http://code.jquery.com/jquery-1.11.1.js')
   script.
+
     var socket = io();
     $('#carta1').click(function(){
       socket.emit('chat message', $("#carta1").val());
@@ -174,6 +192,10 @@ block content
 
     $('#jugada').click(function(){
       socket.emit('chat message', $("#jugada").val());
+    });
+
+    $('#proxRound').click(function(){
+      socket.emit('chat message', "proxima ronda");
     });
 
     socket.on('chat message', function(msg){
