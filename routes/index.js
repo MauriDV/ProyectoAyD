@@ -120,7 +120,7 @@ router.get('/configUsers',function(req,res){
     Match.findOne({_id:req.query.idPartida},function(err,p){
         if(p.j1 == req.session.passport.user){
             if(p.j2 == null){
-                res.send("esperando oponente")
+                res.render("esperando");
             }else{
                 res.redirect('/play');
             }
@@ -154,6 +154,18 @@ router.get('/juegos',function(req,res){
         res.render('gameList',{j:matchs});
     });
 });
+
+router.get('/estadisticas',function(req,res){
+    Match.find({ganador:req.session.passport.user},function(err,victorias){
+        Match.find({j1:req.session.passport.user},function(err,partidas1){
+            Match.find({j2:req.session.passport.user},function(err,partidas2){
+                var a = victorias.length;
+                var jugadas = partidas1.length + partidas2.length; 
+                res.render('estadisticas',{v:a,p:jugadas});
+            });
+        });
+    });
+})
 
 router.get('/play',function(req,res){
 
@@ -215,13 +227,13 @@ router.post('/play',function(req,res){
         g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
     }
     if(g.score[0]>=15){
-        Match.update({name:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player1}},function(err){
+        Match.update({_id:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player1.name}},function(err){
             if(err){
                 console.log("ERROR ACTUALIZANDO PARTIDA FINALIZADA")
             }
         });
     }else if(g.score[1]>=15){
-        Match.update({name:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player2}},function(err){
+        Match.update({_id:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player2.name}},function(err){
             if(err){
                 console.log("ERROR ACTUALIZANDO PARTIDA FINALIZADA")
             }
