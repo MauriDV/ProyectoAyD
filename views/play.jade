@@ -29,13 +29,26 @@ block content
       if juego.score[0] >= 15
         h1 SE TERMINO LA PARTIDA
         p ganador: #{p1}
-        a(href='/')
+        a(href='/configGame')
           button.btn.btn-default(type="button") Home
       else if juego.score[1] >= 15
         h1 SE TERMINO LA PARTIDA
         p ganador: #{p2}
-        a(href='/')
+        a(href='/configGame')
           button.btn.btn-default(type="button") Home
+      else if juego.currentRound.status == "abandono"
+        if juego.currentRound.currentTurn.name == p1
+          h1 SE TERMINO LA PARTIDA
+          p el jugador #{p1} abando la partida
+          p ganador: #{p2}
+          a(href='/configGame')
+            button.btn.btn-default(type="button") Home
+        if juego.currentRound.currentTurn.name == p2
+          h1 SE TERMINO LA PARTIDA
+          p el jugador #{p2} abando la partida
+          p ganador: #{p1}
+          a(href='/configGame')
+            button.btn.btn-default(type="button") Home
       else
         if juego.currentRound.status == "stop"
           h1 SE TERMINO LA MANO
@@ -102,6 +115,8 @@ block content
                           input#valecuatro.btn.btn-default(type="submit", name="action", value="#{item}")  
                       else
                         input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+              input#irAlMazo.btn.btn-default(type="submit", name="action", value="ir al mazo")
+              input#abandonar.btn.btn-default(type="submit", name="action", value="abandonar")
               &nbsp;
           if us == p2
             table
@@ -160,6 +175,8 @@ block content
                           input#valecuatro.btn.btn-default(type="submit", name="action", value="#{item}")  
                       else
                         input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+              input#irAlMazo.btn.btn-default(type="submit", name="action", value="ir al mazo")
+              input#abandonar.btn.btn-default(type="submit", name="action", value="abandonar")
               &nbsp;
   script(src='https://cdn.socket.io/socket.io-1.4.5.js')
   script(src='http://code.jquery.com/jquery-1.11.1.js')
@@ -196,6 +213,14 @@ block content
 
     $('#proxRound').click(function(){
       socket.emit('chat message', "proxima ronda");
+    });
+
+    $('#irAlMazo').click(function(){
+      alert("compra la version full del juego para poder ir al mazo")
+    });
+
+    $('#abandonar').click(function(){
+      socket.emit('chat message', "abandonar");
     });
 
     socket.on('chat message', function(msg){
