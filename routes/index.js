@@ -167,6 +167,11 @@ router.get('/estadisticas',function(req,res){
     });
 })
 
+router.get('/configGame',function(req,res){
+    g = null;
+    res.redirect("/");
+});
+
 router.get('/play',function(req,res){
 
     if(g==undefined){
@@ -233,6 +238,19 @@ router.post('/play',function(req,res){
     }
     if (estado=="Jugar Carta #3"){
         g.play(g.currentRound.currentTurn,"playCard",g.currentRound.currentTurn.card3)
+    }
+    if(estado=="abandonar"){
+        if (g.currentRound.currentTurn == g.player1){
+            nombre = g.player2.name;
+        }else{
+            nombre = g.player1.name;
+        }
+        Match.update({_id:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:nombre}},function(err){
+            if(err){
+                console.log("ERROR ACTUALIZANDO PARTIDA FINALIZADA")
+            }
+        });
+        g.currentRound.status = "abandono"
     }
     if(g.score[0]>=15){
         Match.update({_id:g.identificador},{$set:{score:g.score,state:"finalizada",ganador:g.player1.name}},function(err){
