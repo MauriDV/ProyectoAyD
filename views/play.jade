@@ -114,7 +114,18 @@ block content
                         if juego.currentRound.esValeCuatro !== true
                           input#valecuatro.btn.btn-default(type="submit", name="action", value="#{item}")  
                       else
-                        input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "quiero"
+                          input#quiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "noQuiero"
+                          input#noQuiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "envido"
+                          input#envido.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "envidox2"
+                          input#envidox2.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "quieroTruco"
+                          input#quiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "noQuieroTruco"
+                          input#noQuiero.btn.btn-default(type="submit", name="action", value="#{item}")
               input#irAlMazo.btn.btn-default(type="submit", name="action", value="ir al mazo")
               input#abandonar.btn.btn-default(type="submit", name="action", value="abandonar")
               &nbsp;
@@ -174,7 +185,18 @@ block content
                         if juego.currentRound.esValeCuatro !== true
                           input#valecuatro.btn.btn-default(type="submit", name="action", value="#{item}")  
                       else
-                        input#jugada.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "quiero"
+                          input#quiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "noQuiero"
+                          input#noQuiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "envido"
+                          input#envido.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "envidox2"
+                          input#envidox2.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "quieroTruco"
+                          input#quiero.btn.btn-default(type="submit", name="action", value="#{item}")
+                        if item == "noQuieroTruco"
+                          input#noQuiero.btn.btn-default(type="submit", name="action", value="#{item}")
               input#irAlMazo.btn.btn-default(type="submit", name="action", value="ir al mazo")
               input#abandonar.btn.btn-default(type="submit", name="action", value="abandonar")
               &nbsp;
@@ -184,35 +206,35 @@ block content
 
     var socket = io();
     $('#carta1').click(function(){
-      socket.emit('chat message', $("#carta1").val());
+      socket.emit('jugada', $("#carta1").val());
     });
 
     $('#carta2').click(function(){
-      socket.emit('chat message', $("#carta2").val());
+      socket.emit('jugada', $("#carta2").val());
     });
 
     $('#carta3').click(function(){
-      socket.emit('chat message', $("#carta3").val());
+      socket.emit('jugada', $("#carta3").val());
     });
 
     $('#truco').click(function(){
-      socket.emit('chat message', $("#truco").val());
+      socket.emit('jugada', $("#truco").val());
     });
 
     $('#retruco').click(function(){
-      socket.emit('chat message', $("#retruco").val());
+      socket.emit('jugada', $("#retruco").val());
     });
 
     $('#valecuatro').click(function(){
-      socket.emit('chat message', $("#valecuatro").val());
+      socket.emit('jugada', $("#valecuatro").val());
     });
 
     $('#jugada').click(function(){
-      socket.emit('chat message', $("#jugada").val());
+      socket.emit('jugada', $("#jugada").val());
     });
 
     $('#proxRound').click(function(){
-      socket.emit('chat message', "proxima ronda");
+      socket.emit('jugada', "proxima ronda");
     });
 
     $('#irAlMazo').click(function(){
@@ -220,9 +242,25 @@ block content
     });
 
     $('#abandonar').click(function(){
-      socket.emit('chat message', "abandonar");
+      socket.emit('jugada', "abandonar");
     });
 
-    socket.on('chat message', function(msg){
+    $('#quiero').click(function(){
+      socket.emit('jugada', $("#quiero").val());
+    });
+
+    $('#noQuiero').click(function(){
+      socket.emit('jugada', $("#noQuiero").val());
+    });
+
+    $('#envido').click(function(){
+      socket.emit('jugada', $("#envido").val());
+    });
+
+    $('#envidox2').click(function(){
+      socket.emit('jugada', $("#envidox2").val());
+    });
+
+    socket.on('jugada', function(msg){
       location.reload();
     });

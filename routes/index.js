@@ -185,8 +185,8 @@ router.get('/play',function(req,res){
 
     //SocketIO
     res.io.on('connection', function(socket){
-      socket.on('chat message', function(msg){
-        res.io.emit('chat message', msg);
+      socket.on('jugada', function(msg){
+        res.io.emit('jugada', msg);
       });
     });
 
@@ -195,8 +195,6 @@ router.get('/play',function(req,res){
 
 router.post('/play',function(req,res){
     var estado=req.body.action;
-
-    console.log(estado);
 
     if (estado=='Proxima ronda'){
         g.newRound();
@@ -265,8 +263,7 @@ router.post('/play',function(req,res){
             }
         });
     }
-    console.log(g.currentRound.esTruco);
-    console.log(g.currentRound.esTruco);
+
     res.redirect("/play")
 });
 
